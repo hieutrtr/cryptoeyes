@@ -1,7 +1,7 @@
 from kafka import KafkaConsumer,TopicPartition
 import json, ast
 import os.path
-consumer = KafkaConsumer(bootstrap_servers='104.196.140.94:9092',group_id='analyzer21',auto_offset_reset='earliest')
+consumer = KafkaConsumer(bootstrap_servers='localhost:9092',group_id='analyzer21',auto_offset_reset='earliest')
 
 exchanges = ['marketcap']
 coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
