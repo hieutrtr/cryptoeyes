@@ -1,10 +1,13 @@
 from kafka import KafkaConsumer,TopicPartition
 import json, ast
 import os.path
-consumer = KafkaConsumer(bootstrap_servers='104.196.140.94:9092',group_id='analyzer17',auto_offset_reset='earliest')
+consumer = KafkaConsumer(bootstrap_servers='104.196.140.94:9092',group_id='analyzer21',auto_offset_reset='earliest')
 
 exchanges = ['marketcap']
 coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
+with open("config/coin_list.json") as coinListFile:
+    coins = json.load(coinListFile)
+    coinListFile.close()
 
 def Predict(id,bottom,top):
     if os.path.exists('config/fibo.json'):
@@ -14,6 +17,8 @@ def Predict(id,bottom,top):
             top, bottom = fibo.get('top',top), fibo.get('bottom',bottom)
             fiboFile.close()
     preDict = {}
+    preDict['0'] = bottom
+    preDict['100'] = top
     preDict['0.618'] = top - ((top - bottom)*0.618)
     preDict['0.382'] = top - ((top - bottom)*0.382)
     preDict['1.618'] = top + ((top - bottom)*0.618)
@@ -41,6 +46,11 @@ for msg in consumer:
         if coin['last'] < coin['bottom']:
             coin['bottom'] = coin['last']
     coin['last'] = float(value['price_usd'])
+    coin['percent_change_1h'] = value['percent_change_1h']
+    coin['percent_change_24h'] = value['percent_change_24h']
+    coin['percent_change_7d'] = value['percent_change_7d']
+    coin['24h_volume_usd'] = value['24h_volume_usd']
+    coin['market_cap_usd'] = value['market_cap_usd']
     coin['prediction'] = Predict(value['id'],coin['bottom'],coin['top'])
     data[value['id']] = coin
     prices = {}
