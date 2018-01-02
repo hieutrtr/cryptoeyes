@@ -1,16 +1,17 @@
 from coinmarketcap import Market
 from kafka import KafkaProducer
-import json
+import json,datetime,time
 producer = KafkaProducer(bootstrap_servers='localhost:9092')
 coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
-
-coins = coinmarketcap.ticker(limit=100)
+partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d')
+coins = coinmarketcap.ticker(limit=200)
 coinList = []
 for coin in coins:
-    print 'marketcap.' + coin["id"]
+    topic = 'marketcap.' + coin["id"] + '.' + partition
+    print topic
     print coin
-    producer.send('marketcap.' + coin["id"], bytes(coin))
+    producer.send(topic, bytes(coin))
     coinList.append(coin["id"])
 print "there're " + str(len(coins)) + " of coins are tracking."
 
