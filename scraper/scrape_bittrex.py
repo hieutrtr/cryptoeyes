@@ -14,11 +14,15 @@ coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
 partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d')
 coins = coinmarketcap.ticker(limit=200)
+TICKINTERVAL = {
+    "HOUR":TICKINTERVAL_HOUR,
+    "ONEMIN": TICKINTERVAL_ONEMIN
+}
 for coin in coins:
     market = 'BTC-' + coin["symbol"]
     print(market)
     topic = 'bittrex.' + market + '.hourly'# + partition
-    candles = bittrexv2.get_latest_candle(market,TICKINTERVAL_HOUR)
+    candles = bittrexv2.get_latest_candle(market,TICKINTERVAL[sys.argv[1]])
     if candles.get("success") == True and len(candles.get("result",[])) > 0:
         for can in candles["result"]:
             producer.send(topic, bytes(can))
