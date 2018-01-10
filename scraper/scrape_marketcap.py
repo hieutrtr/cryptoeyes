@@ -11,8 +11,8 @@ coins = coinmarketcap.ticker(limit=200)
 coinList = []
 for coin in coins:
     topic = 'marketcap.' + coin["id"] + '.' + partition
-    # producer.send(topic, bytes(coin))
-    print(topic,coin)
+    producer.send(topic, json.dumps(coin).encode())
+    # print(topic,json.dumps(coin).encode())
     coinList.append(coin["id"])
 
 print("there're " + str(len(coinList)) + " of coins are tracking.")
