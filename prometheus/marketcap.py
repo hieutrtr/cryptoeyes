@@ -55,7 +55,7 @@ def cap_check(coin_id,value):
                     return '{} is decrease {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
     return None
 
-def cap_check(coin_id,value):
+def price_check(coin_id,value):
     ts = time.time()
     if coin_id == 'bitcoin':
         url = 'http://' + prom_host+'/api/v1/query?query=price_usd{id="%s"}&time=%d' % (coin_id,int(ts)-DAY,)
