@@ -10,7 +10,8 @@ from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTE
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
 
-# producer = KafkaProducer(bootstrap_servers='localhost:9092')
+rose_host = os.environ['ROSE_HOST']
+producer = KafkaProducer(bootstrap_servers=rose_host)
 coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
 partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d')
@@ -34,7 +35,7 @@ for coin in coins:
                 producer.send(topic, bytes(histories["result"][i]))
         r.set(topic+'.check_point',histories["result"][hist_lenght]["Id"])
     else: print(market,candles)
-print "there're " + str(len(coins)) + " of coins are tracking."
+print("there're " + str(len(coins)) + " of coins are tracking.")
 #
 # print("--------Ticker\n", bittrex.get_ticker("BTC-LTC"))
 # print("--------Sum\n", bittrex.get_marketsummary("BTC-LTC"))
