@@ -14,7 +14,7 @@ DAY = HOUR*24
 dir_path = os.path.dirname(os.path.realpath(__file__))
 rose_host = os.environ['ROSE_HOST']
 prom_host = os.environ['PROM_HOST']
-tracking_limit = int(os.environ['PROM_HOST']) if os.environ['PROM_HOST'] is not None else 5
+tracking_limit = int(os.environ['TRACKING_LIMIT']) if os.environ['TRACKING_LIMIT'] is not None else 5
 updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
 job = updater.job_queue
 
