@@ -11,6 +11,7 @@ bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
 
 rose_host = os.environ['ROSE_HOST']
+chunk = int(os.environ['CHUNK']) if os.environ['CHUNK'] is not None else 1
 producer = KafkaProducer(bootstrap_servers=rose_host)
 coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
@@ -21,7 +22,7 @@ TICKINTERVAL = {
     "ONEMIN": TICKINTERVAL_ONEMIN
 }
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
-for coin in coins:
+for coin in coins[(chunk-1)*10:chunk*10]:
     market = 'BTC-' + coin["symbol"]
     histories = bittrex.get_market_history(market)
     if histories.get("success") == True and histories.get("result") is not None:
