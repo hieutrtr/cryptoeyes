@@ -30,14 +30,17 @@ for col in columns:
 partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d')
 topics = tuple(ex + '.' + coin + '.' + partition for ex in exchanges for coin in coins)
 print(topics)
-consumer = KafkaConsumer(bootstrap_servers=rose_host,group_id='prometheus',auto_offset_reset='earliest')
+consumer = KafkaConsumer(bootstrap_servers=rose_host,group_id='test1',auto_offset_reset='earliest')
 
 def cap_check(coin_id,value):
     ts = time.time()
-    r = requests.get(prom_host+'/api/v1/query?query=market_cap_usd{id="{}"}&time={}'.format(coin_id,int(ts)-FIVE_MIN))
+    url = 'http://' + prom_host+'/api/v1/query?query=market_cap_usd{id="%s"}&time=%d' % (coin_id,int(ts)-FIVE_MIN,)
+    r = requests.get(url=url)
     if r.status_code >= 400: r.raise_for_status()
     res = r.json()
-    last_vals = res["data"]["result"][0]["value"]
+    last_vals = []
+    if len(res["data"]["result"]) > 0:
+        last_vals = res["data"]["result"][0]["value"]
     for lv in last_vals:
         if type[lv] is str:
             if float(lv) < float(value):
