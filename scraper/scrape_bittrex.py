@@ -23,15 +23,15 @@ TICKINTERVAL = {
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 for coin in coins:
     market = 'BTC-' + coin["symbol"]
-    print(market)
     histories = bittrex.get_market_history(market)
     if histories.get("success") == True and len(histories.get("result",[])) > 0:
         hist_lenght = len(histories["result"])-1
         topic = 'bittrex.' + market + '.buy_order'# + partition
+        print(topic)
         check_point = r.get(topic+'.check_point')
         for i in range(hist_lenght,-1,-1):
             hist = histories["result"][i]
-            if check_point is None or hist["Id"] > check_point:
+            if check_point is None or hist["Id"] > int(check_point):
                 producer.send(topic, json.dumps(hist).encode())
         r.set(topic+'.check_point',histories["result"][hist_lenght]["Id"])
     else: print(market,histories)
