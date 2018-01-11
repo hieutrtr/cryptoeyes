@@ -6,7 +6,7 @@ from kafka import KafkaProducer
 import json,datetime,time
 import redis
 from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
-import thread
+import _thread
 
 rose_host = os.environ['ROSE_HOST']
 coinmarketcap = Market()
@@ -44,7 +44,7 @@ def scrape(chunk=1):
 # Create two threads as follows
 try:
    for i in range(50):
-       thread.start_new_thread( scrape, (i, ) )
+       _thread.start_new_thread( scrape, (i, ) )
 except:
    print("Error: unable to start thread")
 
