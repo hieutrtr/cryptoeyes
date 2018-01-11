@@ -48,7 +48,7 @@ try:
 except:
    print("Error: unable to start thread")
 
-time.sleep(240)
+time.sleep(120)
 #
 # print("--------Ticker\n", bittrex.get_ticker("BTC-LTC"))
 # print("--------Sum\n", bittrex.get_marketsummary("BTC-LTC"))
