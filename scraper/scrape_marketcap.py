@@ -8,7 +8,7 @@ producer = KafkaProducer(bootstrap_servers=rose_host)
 coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
 partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d')
-coins = coinmarketcap.ticker(limit=200)
+coins = coinmarketcap.ticker(limit=500)
 coinList = []
 for coin in coins:
     topic = 'marketcap.' + coin["id"] + '.' + partition
