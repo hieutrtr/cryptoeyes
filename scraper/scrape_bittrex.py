@@ -32,7 +32,7 @@ for coin in coins:
         for i in range(hist_lenght,-1,-1):
             hist = histories["result"][i]
             if check_point is None or hist["Id"] > check_point:
-                producer.send(topic, bytes(histories["result"][i]))
+                producer.send(topic, json.dumps(histories["result"][i]).encode())
         r.set(topic+'.check_point',histories["result"][hist_lenght]["Id"])
     else: print(market,histories)
 print("there're " + str(len(coins)) + " of coins are tracking.")
