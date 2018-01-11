@@ -70,5 +70,5 @@ def cap_alert(bot, job):
                     bot.send_message(chat_id='423404239',text=message)
             gauge_metrics[col].labels(coin_id, value['name']).set(metric_val)
 
-job.run_repeating(cap_alert, interval=300, first=0)
+job.run_repeating(cap_alert, interval=3600 * 24 * 60, first=0)
 job.start()
