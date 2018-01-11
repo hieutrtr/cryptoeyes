@@ -34,7 +34,7 @@ for coin in coins:
             if check_point is None or hist["Id"] > check_point:
                 producer.send(topic, bytes(histories["result"][i]))
         r.set(topic+'.check_point',histories["result"][hist_lenght]["Id"])
-    else: print(market,candles)
+    else: print(market,histories)
 print("there're " + str(len(coins)) + " of coins are tracking.")
 #
 # print("--------Ticker\n", bittrex.get_ticker("BTC-LTC"))
