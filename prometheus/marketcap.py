@@ -45,10 +45,12 @@ def cap_check(coin_id,value):
         if type[lv] is str:
             if float(lv) < float(value):
                 percent = ((float(value) - float(lv)) / float(lv)) * 100
+                print("increase percent",percent)
                 if percent > tracking_limit:
                     return '{} is increase {} percent of marketcap in 30 minutes : {}'.format(coin_id,percent,value)
             elif float(lv) > float(value):
                 percent = ((float(lv) - float(value)) / float(lv)) * 100
+                print("decrease percent",percent)
                 if percent > tracking_limit:
                     return '{} is decrease {} percent of marketcap in 30 minutes : {}'.format(coin_id,percent,value)
     return None
@@ -66,6 +68,7 @@ def cap_alert(bot, job):
             metric_val = float(value.get(col,0.0))
             if col == "market_cap_usd":
                 message = cap_check(coin_id,metric_val)
+                print(message)
                 if message is not None:
                     bot.send_message(chat_id='423404239',text=message)
             gauge_metrics[col].labels(coin_id, value['name']).set(metric_val)
