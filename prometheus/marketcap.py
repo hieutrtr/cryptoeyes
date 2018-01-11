@@ -42,7 +42,7 @@ def cap_check(coin_id,value):
     if len(res["data"]["result"]) > 0:
         last_vals = res["data"]["result"][0]["value"]
     for lv in last_vals:
-        if type[lv] is str:
+        if type(lv) is str:
             if float(lv) < float(value):
                 percent = ((float(value) - float(lv)) / float(lv)) * 100
                 print("increase percent",percent)
