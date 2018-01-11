@@ -30,7 +30,7 @@ for col in columns:
 partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d')
 topics = tuple(ex + '.' + coin + '.' + partition for ex in exchanges for coin in coins)
 print(topics)
-consumer = KafkaConsumer(bootstrap_servers=rose_host,group_id='test1',auto_offset_reset='earliest')
+consumer = KafkaConsumer(bootstrap_servers=rose_host,group_id='prometheus',auto_offset_reset='earliest')
 
 def cap_check(coin_id,value):
     ts = time.time()
