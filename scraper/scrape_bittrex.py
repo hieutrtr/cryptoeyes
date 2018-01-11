@@ -26,13 +26,13 @@ for coin in coins:
     histories = bittrex.get_market_history(market)
     if histories.get("success") == True and histories.get("result") is not None:
         hist_lenght = len(histories["result"])-1
-        topic = 'bittrex.' + market + '.buy_order'# + partition
+        topic = 'bittrex.' + market + '.history'
         print(topic)
-        check_point = r.get(topic+'.check_point')
+        check_point = r.get(topic + '.check_point')
         for i in range(hist_lenght,-1,-1):
             hist = histories["result"][i]
             if check_point is None or hist["Id"] > int(check_point):
-                producer.send(topic, json.dumps(hist).encode())
+                producer.send(topic + '.' + partition, json.dumps(hist).encode())
         r.set(topic+'.check_point',histories["result"][hist_lenght]["Id"])
     else: print(market,histories)
 print("there're " + str(len(coins)) + " of coins are tracking.")
