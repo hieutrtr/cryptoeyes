@@ -5,6 +5,7 @@ import datetime,time
 import requests
 from prometheus_client import start_http_server, Gauge
 from telegram.ext import Updater,CommandHandler
+from telegram import ParseMode
 
 FIVE_MIN = 300
 HAFL_HOUR = 1800
@@ -47,12 +48,12 @@ def cap_check(coin_id,value):
                 percent = ((float(value) - float(lv)) / float(lv)) * 100
                 print("cap increase percent",percent)
                 if percent > tracking_limit:
-                    return '{} is increase {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
+                    return '*{}* is *increase* {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
             elif float(lv) > float(value):
                 percent = ((float(lv) - float(value)) / float(lv)) * 100
                 print("cap decrease percent",percent)
                 if percent > tracking_limit:
-                    return '{} is decrease {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
+                    return '*{}* is *decrease* {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
     return None
 
 def price_check(coin_id,value):
@@ -73,11 +74,11 @@ def price_check(coin_id,value):
             if float(lv) < float(value):
                 print("price increase percent",percent)
                 percent = ((float(value) - float(lv)) / float(lv)) * 100
-                return '---{} is increase {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
+                return '---*{}* is *increase* {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
             elif float(lv) > float(value):
                 print("price decrease percent",percent)
                 percent = ((float(lv) - float(value)) / float(lv)) * 100
-                return '---{} is decrease {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
+                return '---*{}* is *decrease* {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
     return None
 
 def cap_alert(bot, job):
@@ -95,14 +96,14 @@ def cap_alert(bot, job):
                 message = cap_check(coin_id,metric_val)
                 if message is not None:
                     print(message)
-                    bot.send_message(chat_id='423404239',text=message)
+                    bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
                     if coin_id == "bitcoin":
                         message = price_check(coin_id,float(value.get("price_usd",0.0)))
                     else:
                         message = price_check(coin_id,float(value.get("price_btc",0.0)))
                     if message is not None:
                         print(message)
-                        bot.send_message(chat_id='423404239',text=message)
+                        bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
             gauge_metrics[col].labels(coin_id, value['name']).set(metric_val)
 
 job.run_repeating(cap_alert, interval=3600 * 24 * 60, first=0)
