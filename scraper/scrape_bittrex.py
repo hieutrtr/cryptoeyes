@@ -24,7 +24,7 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 for coin in coins:
     market = 'BTC-' + coin["symbol"]
     print(market)
-    histories = bittrexv2.get_market_history(market)
+    histories = bittrex.get_market_history(market)
     if histories.get("success") == True and len(histories.get("result",[])) > 0:
         hist_lenght = len(histories["result"])-1
         topic = 'bittrex.' + market + '.buy_order'# + partition
