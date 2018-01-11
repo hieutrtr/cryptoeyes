@@ -46,7 +46,7 @@ try:
    for i in range(50):
        thread.start_new_thread( scrape, (i, ) )
 except:
-   print "Error: unable to start thread"
+   print("Error: unable to start thread")
 
 time.sleep(240)
 #
