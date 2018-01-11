@@ -72,12 +72,12 @@ def price_check(coin_id,value):
     for lv in last_vals:
         if type(lv) is str:
             if float(lv) < float(value):
-                print("price increase percent",percent)
                 percent = ((float(value) - float(lv)) / float(lv)) * 100
+                print("price increase percent",percent)
                 return '---*{}* is *increase* {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
             elif float(lv) > float(value):
-                print("price decrease percent",percent)
                 percent = ((float(lv) - float(value)) / float(lv)) * 100
+                print("price decrease percent",percent)
                 return '---*{}* is *decrease* {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
     return None
 
