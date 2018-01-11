@@ -24,6 +24,8 @@ TICKINTERVAL = {
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 for coin in coins[(chunk-1)*10:chunk*10]:
     market = 'BTC-' + coin["symbol"]
+    if coin["symbol"] == 'BTC':
+        market = 'USDT-' + coin["symbol"]
     histories = bittrex.get_market_history(market)
     if histories.get("success") == True and histories.get("result") is not None:
         hist_lenght = len(histories["result"])-1
