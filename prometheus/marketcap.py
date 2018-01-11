@@ -55,6 +55,29 @@ def cap_check(coin_id,value):
                     return '{} is decrease {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
     return None
 
+def cap_check(coin_id,value):
+    ts = time.time()
+    if coin_id == 'bitcoin':
+        url = 'http://' + prom_host+'/api/v1/query?query=price_usd{id="%s"}&time=%d' % (coin_id,int(ts)-DAY,)
+    else:
+        url = 'http://' + prom_host+'/api/v1/query?query=price_btc{id="%s"}&time=%d' % (coin_id,int(ts)-DAY,)
+
+    r = requests.get(url=url)
+    if r.status_code >= 400: r.raise_for_status()
+    res = r.json()
+    last_vals = []
+    if len(res["data"]["result"]) > 0:
+        last_vals = res["data"]["result"][0]["value"]
+    for lv in last_vals:
+        if type(lv) is str:
+            if float(lv) < float(value):
+                percent = ((float(value) - float(lv)) / float(lv)) * 100
+                return '---{} is increase {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
+            elif float(lv) > float(value):
+                percent = ((float(lv) - float(value)) / float(lv)) * 100
+                return '---{} is decrease {} percent of price in 5 minutes : {}'.format(coin_id,percent,value)
+    return None
+
 def cap_alert(bot, job):
     start_http_server(8000)
     consumer.subscribe(topics=topics)
@@ -68,9 +91,16 @@ def cap_alert(bot, job):
             metric_val = float(value.get(col,0.0))
             if col == "market_cap_usd":
                 message = cap_check(coin_id,metric_val)
-                print(message)
                 if message is not None:
+                    print(message)
                     bot.send_message(chat_id='423404239',text=message)
+                    if coin_id == "bitcoin":
+                        message = price_check(coin_id,float(value.get("price_usd",0.0)))
+                    else:
+                        message = price_check(coin_id,float(value.get("price_btc",0.0)))
+                    if message is not None:
+                        print(message)
+                        bot.send_message(chat_id='423404239',text=message)
             gauge_metrics[col].labels(coin_id, value['name']).set(metric_val)
 
 job.run_repeating(cap_alert, interval=3600 * 24 * 60, first=0)
