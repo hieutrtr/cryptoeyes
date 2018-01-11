@@ -14,6 +14,7 @@ DAY = HOUR*24
 dir_path = os.path.dirname(os.path.realpath(__file__))
 rose_host = os.environ['ROSE_HOST']
 prom_host = os.environ['PROM_HOST']
+tracking_limit = int(os.environ['PROM_HOST']) if os.environ['PROM_HOST'] is not None else 5
 updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
 job = updater.job_queue
 
@@ -41,11 +42,11 @@ def cap_check(coin_id,value):
         if type[lv] is str:
             if float(lv) < float(value):
                 percent = ((float(value) - float(lv)) / float(lv)) * 100
-                if percent > 10:
+                if percent > tracking_limit:
                     return '{} is increase {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
             elif float(lv) > float(value):
                 percent = ((float(lv) - float(value)) / float(lv)) * 100
-                if percent > 10:
+                if percent > tracking_limit:
                     return '{} is decrease {} percent of marketcap in 5 minutes : {}'.format(coin_id,percent,value)
     return None
 
