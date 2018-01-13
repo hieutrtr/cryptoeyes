@@ -1,11 +1,57 @@
+from kafka import KafkaConsumer,TopicPartition
 import json
+import os, time, datetime
 from telegram.ext import Updater,CommandHandler
-updater = Updater(token='481353725:AAFIPgZmgz1bv7C6NgDFeIf25ZSNPWU3XP0')
+rose_host = os.environ['ROSE_HOST']
+updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
 dispatcher = updater.dispatcher
+result = {}
+maxkey = 0
+
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!")
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
+
+def count_order(bot, update, args):
+    result = {}
+    maxkey = 0
+    for bd in range(int(args[1])-1,-1,-1):
+        backward_time = int(time.time()) - (bd * 86400)
+        partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
+        consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000)
+        for msg in consumer:
+            value = json.loads(msg.value.decode('ascii'))
+            otype = value['OrderType']
+            price = value['Price']
+            total = value['Total']
+            price = str(price)
+            if 'e' in price:
+                price = int(str(price)[:-4].replace('.','')[:2])
+            else:
+                price = int(str(int(str(price)[2:]))[:2])
+            price = price if price > 10 else price * 10
+            if otype == 'BUY':
+                if price > maxkey:
+                    maxkey = price
+                result[price] = total if result.get(price) is None else total + result.get(price)
+            else:
+                if maxkey == 0 or total == 0:
+                    continue
+                while result[maxkey] % total == result[maxkey]:
+                    total = total - result[maxkey]
+                    del result[maxkey]
+                    while result.get(maxkey) is None:
+                        maxkey-=1
+                        if maxkey == 0:
+                            break
+                    if maxkey == 0:
+                        break
+                if result.get(maxkey) is not None:
+                    result[maxkey] = result[maxkey] - total
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result:{}".format(args[0],json.dumps(result)))
+count_order_handler = CommandHandler('co', count_order, pass_args=True)
+dispatcher.add_handler(count_order_handler)
 
 def fibo_config(bot, update, args):
     with open("config/fibo.json") as fiboFile:
