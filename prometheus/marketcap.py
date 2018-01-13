@@ -88,6 +88,7 @@ def price_check(coin_id,value):
 def cap_alert(bot, job):
     start_http_server(8000)
     consumer.subscribe(topics=topics)
+    bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
     for msg in consumer:
         print(msg)
         print(msg.value.decode('ascii'))
