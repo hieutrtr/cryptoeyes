@@ -59,9 +59,9 @@ def cap_check(coin_id,value):
 def price_check(coin_id,value):
     ts = time.time()
     if coin_id == 'bitcoin':
-        url = 'http://' + prom_host+'/api/v1/query?query=price_usd{id="%s"}&time=%d' % (coin_id,int(ts)-DAY/2,)
+        url = 'http://' + prom_host+'/api/v1/query?query=price_usd{id="%s"}&time=%d' % (coin_id,int(ts)-FIVE_MIN,)
     else:
-        url = 'http://' + prom_host+'/api/v1/query?query=price_btc{id="%s"}&time=%d' % (coin_id,int(ts)-DAY/2,)
+        url = 'http://' + prom_host+'/api/v1/query?query=price_btc{id="%s"}&time=%d' % (coin_id,int(ts)-FIVE_MIN,)
 
     r = requests.get(url=url)
     if r.status_code >= 400: r.raise_for_status()
