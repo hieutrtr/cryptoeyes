@@ -91,16 +91,18 @@ def cap_alert(bot, job):
         payload = ''
         coin_id = value['id'].replace('-', '_')
         for col in columns:
-            metric_val = float(value.get(col,0.0))
+            metric_val = float(value.get(col,0.0)) if value.get(col,0.0) is not None else 0.0
             if col == "market_cap_usd":
                 message = cap_check(coin_id,metric_val)
                 if message is not None:
                     print(message)
                     bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
                     if coin_id == "bitcoin":
-                        message = price_check(coin_id,float(value.get("price_usd",0.0)))
+                        price_usd_mess = float(value.get("price_usd",0.0)) if value.get("price_usd",0.0) is not None else 0.0
+                        message = price_check(coin_id,price_usd_mess)
                     else:
-                        message = price_check(coin_id,float(value.get("price_btc",0.0)))
+                        price_btc_mess = float(value.get("price_btc",0.0)) if value.get("price_btc",0.0) is not None else 0.0
+                        message = price_check(coin_id,price_btc_mess)
                     if message is not None:
                         print(message)
                         bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
