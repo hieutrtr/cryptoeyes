@@ -3,6 +3,13 @@ import json
 import os, time, datetime, sys
 from telegram.ext import Updater,CommandHandler
 from telegram import ParseMode
+from telegram.error import (TelegramError, Unauthorized, BadRequest,
+                            TimedOut, ChatMigrated, NetworkError)
+import logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path+'/..')
@@ -133,46 +140,64 @@ def my_balance(bot, update, args):
     bot.send_message(chat_id=update.message.chat_id, text="My balances:{}".format(bittrex.get_balances()),parse_mode=ParseMode.MARKDOWN)
 my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
+#
+# def fibo_config(bot, update, args):
+#     with open("config/fibo.json") as fiboFile:
+#         fibo = json.load(fiboFile)
+#         fibo[args[0]] = {"bottom": float(args[1]), "top": float(args[2])}
+#         fiboFile.close()
+#     with open("config/fibo.json", "w") as fiboFile:
+#         fiboFile.write(json.dumps(fibo))
+#         fiboFile.close()
+#     bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n"+ args[0] + "'s fibo is " + json.dumps(fibo[args[0]]),parse_mode=ParseMode.MARKDOWN)
+# fibo_handler = CommandHandler('fibo', fibo_config, pass_args=True)
+# dispatcher.add_handler(fibo_handler)
+#
+# def follow_config(bot, update, args):
+#     follow = []
+#     with open("config/follow.json") as followFile:
+#         follow = json.load(followFile)
+#         if args[0] == "more":
+#             follow.extend(args[1:])
+#         else:
+#             follow = args
+#         followFile.close()
+#     with open("config/follow.json", "w") as followFile:
+#         followFile.write(json.dumps(follow))
+#         followFile.close()
+#     bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n Follow list is " + json.dumps(follow),parse_mode=ParseMode.MARKDOWN)
+# follow_handler = CommandHandler('follow', follow_config, pass_args=True)
+# dispatcher.add_handler(follow_handler)
+#
+# def list_data(bot, update, args):
+#     def listCoin():
+#         with open("config/coin_list.json") as listCoinFile:
+#             listCoin = json.load(listCoinFile)
+#             listCoinFile.close()
+#         return listCoin
+#     message = {
+#         "coins": listCoin()
+#     }[args[0]]
+#     bot.send_message(chat_id=update.message.chat_id, text="Your list of coins is below, My Lord !!!\n" + json.dumps(message),parse_mode=ParseMode.MARKDOWN)
+# list_data_handler = CommandHandler('list', list_data, pass_args=True)
+# dispatcher.add_handler(list_data_handler)
 
-def fibo_config(bot, update, args):
-    with open("config/fibo.json") as fiboFile:
-        fibo = json.load(fiboFile)
-        fibo[args[0]] = {"bottom": float(args[1]), "top": float(args[2])}
-        fiboFile.close()
-    with open("config/fibo.json", "w") as fiboFile:
-        fiboFile.write(json.dumps(fibo))
-        fiboFile.close()
-    bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n"+ args[0] + "'s fibo is " + json.dumps(fibo[args[0]]),parse_mode=ParseMode.MARKDOWN)
-fibo_handler = CommandHandler('fibo', fibo_config, pass_args=True)
-dispatcher.add_handler(fibo_handler)
+def error_callback(bot, update, error):
+    try:
+        raise error
+    except Unauthorized:
+        # remove update.message.chat_id from conversation list
+    except BadRequest:
+        # handle malformed requests - read more below!
+    except TimedOut:
+        # handle slow connection problems
+    except NetworkError:
+        # handle other connection problems
+    except ChatMigrated as e:
+        # the chat_id of a group has changed, use e.new_chat_id instead
+    except TelegramError:
+        # handle all other telegram related errors
 
-def follow_config(bot, update, args):
-    follow = []
-    with open("config/follow.json") as followFile:
-        follow = json.load(followFile)
-        if args[0] == "more":
-            follow.extend(args[1:])
-        else:
-            follow = args
-        followFile.close()
-    with open("config/follow.json", "w") as followFile:
-        followFile.write(json.dumps(follow))
-        followFile.close()
-    bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n Follow list is " + json.dumps(follow),parse_mode=ParseMode.MARKDOWN)
-follow_handler = CommandHandler('follow', follow_config, pass_args=True)
-dispatcher.add_handler(follow_handler)
-
-def list_data(bot, update, args):
-    def listCoin():
-        with open("config/coin_list.json") as listCoinFile:
-            listCoin = json.load(listCoinFile)
-            listCoinFile.close()
-        return listCoin
-    message = {
-        "coins": listCoin()
-    }[args[0]]
-    bot.send_message(chat_id=update.message.chat_id, text="Your list of coins is below, My Lord !!!\n" + json.dumps(message),parse_mode=ParseMode.MARKDOWN)
-list_data_handler = CommandHandler('list', list_data, pass_args=True)
-dispatcher.add_handler(list_data_handler)
+dispatcher.add_error_handler(error_callback)
 
 updater.start_polling()
