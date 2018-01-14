@@ -8,6 +8,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path+'/..')
 from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
 
+bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 rose_host = os.environ['ROSE_HOST']
 updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
 dispatcher = updater.dispatcher
@@ -129,7 +130,6 @@ count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=Tru
 dispatcher.add_handler(count_sell_order_handler)
 
 def my_balance(bot, update, args):
-    bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
     bot.send_message(chat_id=update.message.chat_id, text="My balances:{}".format(bittrex.get_balances()),parse_mode=ParseMode.MARKDOWN)
 my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
