@@ -140,9 +140,12 @@ def my_balance(bot, update, args):
     message = ""
     for ba in bittrex.get_balances()["result"]:
         if ba["Balance"] != 0:
-            message += '{}:{}\n'.format(ba["Currency"],ba["Balance"])
+            ticker = "N/A"
+            if ba["Currency"] in ['BTC','USDT']:
+                ticker = bittrex.get_ticker("BTC-"+ba["Currency"])["result"]["Last"]*ba["Balance"]
+            message += '*{}*:{}({})\n'.format(ba["Currency"],ba["Balance"],ticker)
 
-    bot.send_message(chat_id=update.message.chat_id, text="My balances:{}".format(message),parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
 my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
 #
