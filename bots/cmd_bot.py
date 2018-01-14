@@ -37,7 +37,7 @@ def count_order(bot, update, args):
         whale = {}
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
-        consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000)
+        consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000,max_partition_fetch_bytes=10485760,max_poll_records=100000)
         for msg in consumer:
             value = json.loads(msg.value.decode('ascii'))
             order_id = value['Id']
@@ -92,7 +92,7 @@ def count_no_sell_order(bot, update, args):
     for bd in range(int(args[1])-1,-1,-1):
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
-        consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000,max_poll_records=100000)
+        consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000)
         for msg in consumer:
             value = json.loads(msg.value.decode('ascii'))
             order_id = value['Id']
