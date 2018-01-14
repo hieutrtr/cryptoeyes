@@ -137,7 +137,11 @@ count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=Tru
 dispatcher.add_handler(count_sell_order_handler)
 
 def my_balance(bot, update, args):
-    bot.send_message(chat_id=update.message.chat_id, text="My balances:{}".format(bittrex.get_balances()),parse_mode=ParseMode.MARKDOWN)
+    message = ""
+    for ba in bittrex.get_balances()["result"]:
+        if ba["Balance"] != 0:
+            message += ba + "\n"
+    bot.send_message(chat_id=update.message.chat_id, text="My balances:{}".format(message),parse_mode=ParseMode.MARKDOWN)
 my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
 #
