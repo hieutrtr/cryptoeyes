@@ -18,6 +18,7 @@ def count_order(bot, update, args):
     maxkey = 0
     id_cache = []
     alert_limit = int(args[2])
+    last_price = 0
     for bd in range(int(args[1])-1,-1,-1):
         whale = {}
         backward_time = int(time.time()) - (bd * 86400)
@@ -31,6 +32,7 @@ def count_order(bot, update, args):
             id_cache.append(order_id)
             otype = value['OrderType']
             price = value['Price']
+            last_price = price
             total = value['Total']
             price = str(price)
             if 'e' in price:
@@ -58,9 +60,9 @@ def count_order(bot, update, args):
                         break
                 if result.get(maxkey) is not None:
                     result[maxkey] = result[maxkey] - total
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result:{}".format(args[0],json.dumps(result)))
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result:{} - *last price {}*".format(args[0],json.dumps(result),last_price))
     if whale != {}:
-        bot.send_message(chat_id=update.message.chat_id, text="Whale info:{}".format(json.dumps(whale)))
+        bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:{}".format(args[0],json.dumps(whale)))
 count_order_handler = CommandHandler('co', count_order, pass_args=True)
 dispatcher.add_handler(count_order_handler)
 
