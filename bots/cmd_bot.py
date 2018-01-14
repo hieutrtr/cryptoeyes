@@ -3,6 +3,11 @@ import json
 import os, time, datetime
 from telegram.ext import Updater,CommandHandler
 from telegram import ParseMode
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, dir_path+'/..')
+from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
+
 rose_host = os.environ['ROSE_HOST']
 updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
 dispatcher = updater.dispatcher
@@ -91,7 +96,7 @@ def count_no_sell_order(bot, update, args):
             price = price if price > 10 else price * 10
             if otype == 'BUY':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of BUY:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of BUY:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
 count_order_no_sell_handler = CommandHandler('cons', count_no_sell_order, pass_args=True)
 dispatcher.add_handler(count_order_no_sell_handler)
 
@@ -119,9 +124,15 @@ def count_sell_order(bot, update, args):
             price = price if price > 10 else price * 10
             if otype == 'SELL':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of SELL:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of SELL:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
 count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=True)
 dispatcher.add_handler(count_sell_order_handler)
+
+def my_balance(bot, update, args):
+    bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+    bot.send_message(chat_id=update.message.chat_id, text="My balances:{}".format(bittrex.get_balances()),parse_mode=ParseMode.MARKDOWN)
+my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
+dispatcher.add_handler(my_balance_handler)
 
 def fibo_config(bot, update, args):
     with open("config/fibo.json") as fiboFile:
