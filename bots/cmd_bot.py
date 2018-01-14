@@ -23,7 +23,7 @@ def count_order(bot, update, args):
         consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000)
         for msg in consumer:
             value = json.loads(msg.value.decode('ascii'))
-            order_id = value['id']
+            order_id = value['Id']
             if order_id in id_cache:
                 continue
             id_cache.append(order_id)
@@ -67,7 +67,7 @@ def count_no_sell_order(bot, update, args):
         consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000)
         for msg in consumer:
             value = json.loads(msg.value.decode('ascii'))
-            order_id = value['id']
+            order_id = value['Id']
             if order_id in id_cache:
                 continue
             id_cache.append(order_id)
