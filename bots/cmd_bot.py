@@ -183,14 +183,7 @@ dispatcher.add_handler(my_balance_handler)
 # dispatcher.add_handler(list_data_handler)
 
 def error_callback(bot, update, error):
-    try:
-        raise error
-    except Unauthorized:
-    except BadRequest:
-    except TimedOut:
-    except NetworkError:
-    except ChatMigrated as e:
-    except TelegramError:
+    raise error
 dispatcher.add_error_handler(error_callback)
 
 updater.start_polling()
