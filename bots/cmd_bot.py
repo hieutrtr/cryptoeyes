@@ -117,7 +117,7 @@ def count_sell_order(bot, update, args):
             if otype == 'SELL':
                 result[price] = total if result.get(price) is None else total + result.get(price)
     bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of SELL:{}".format(args[0],json.dumps(result)))
-count_sell_order_handler = CommandHandler('cons', count_sell_order, pass_args=True)
+count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=True)
 dispatcher.add_handler(count_sell_order_handler)
 
 def fibo_config(bot, update, args):
