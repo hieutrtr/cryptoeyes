@@ -18,6 +18,8 @@ def count_order(bot, update, args):
     maxkey = 0
     id_cache = []
     for bd in range(int(args[1])-1,-1,-1):
+        alert_limit = args[2]
+        whale = {}
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
         consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000)
@@ -36,6 +38,8 @@ def count_order(bot, update, args):
             else:
                 price = int(str(int(str(price)[2:]))[:2])
             price = price if price > 10 else price * 10
+            if alert_limit < total:
+                whale[value['Price']] = '{} {} btc'.format(otype,total)
             if otype == 'BUY':
                 if price > maxkey:
                     maxkey = price
@@ -55,6 +59,8 @@ def count_order(bot, update, args):
                 if result.get(maxkey) is not None:
                     result[maxkey] = result[maxkey] - total
     bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result:{}".format(args[0],json.dumps(result)))
+    if whale != {}:
+        bot.send_message(chat_id=update.message.chat_id, text="Whale info:{}".format(json.dumps(whale)))
 count_order_handler = CommandHandler('co', count_order, pass_args=True)
 dispatcher.add_handler(count_order_handler)
 
@@ -82,9 +88,37 @@ def count_no_sell_order(bot, update, args):
             price = price if price > 10 else price * 10
             if otype == 'BUY':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result without SELL:{}".format(args[0],json.dumps(result)))
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of BUY:{}".format(args[0],json.dumps(result)))
 count_order_no_sell_handler = CommandHandler('cons', count_no_sell_order, pass_args=True)
 dispatcher.add_handler(count_order_no_sell_handler)
+
+def count_sell_order(bot, update, args):
+    result = {}
+    id_cache = []
+    for bd in range(int(args[1])-1,-1,-1):
+        backward_time = int(time.time()) - (bd * 86400)
+        partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
+        consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000)
+        for msg in consumer:
+            value = json.loads(msg.value.decode('ascii'))
+            order_id = value['Id']
+            if order_id in id_cache:
+                continue
+            id_cache.append(order_id)
+            otype = value['OrderType']
+            price = value['Price']
+            total = value['Total']
+            price = str(price)
+            if 'e' in price:
+                price = int(str(price)[:-4].replace('.','')[:2])
+            else:
+                price = int(str(int(str(price)[2:]))[:2])
+            price = price if price > 10 else price * 10
+            if otype == 'SELL':
+                result[price] = total if result.get(price) is None else total + result.get(price)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of SELL:{}".format(args[0],json.dumps(result)))
+count_sell_order_handler = CommandHandler('cons', count_sell_order, pass_args=True)
+dispatcher.add_handler(count_sell_order_handler)
 
 def fibo_config(bot, update, args):
     with open("config/fibo.json") as fiboFile:
