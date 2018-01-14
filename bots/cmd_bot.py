@@ -61,7 +61,7 @@ def count_order(bot, update, args):
                         break
                 if result.get(maxkey) is not None:
                     result[maxkey] = result[maxkey] - total
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result:{} - *last price {}*".format(args[0],json.dumps(result),last_price),parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result:{} - *last price {}*".format(args[0],json.dumps(result),last_price),parse_mode=ParseMode.MARKDOWN)
     if whale != {}:
         bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:{}".format(args[0],json.dumps(whale)),parse_mode=ParseMode.MARKDOWN)
 count_order_handler = CommandHandler('co', count_order, pass_args=True)
