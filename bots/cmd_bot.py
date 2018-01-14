@@ -17,8 +17,8 @@ def count_order(bot, update, args):
     result = {}
     maxkey = 0
     id_cache = []
+    alert_limit = int(args[2])
     for bd in range(int(args[1])-1,-1,-1):
-        alert_limit = args[2]
         whale = {}
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
