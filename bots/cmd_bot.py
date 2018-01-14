@@ -74,10 +74,12 @@ def count_order(bot, update, args):
                         break
                 if result.get(maxkey) is not None:
                     result[maxkey] = result[maxkey] - total
+                message = ""
                 for k,v in result.items():
                     message += 'at {} have {}\n'.format(k,v)
     bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* :\n{} \n *last price {}*".format(args[0],json.dumps(result),last_price),parse_mode=ParseMode.MARKDOWN)
     if whale != {}:
+        message = ""
         for k,v in whale.items():
             message += 'at {} {}\n'.format(k,v)
         bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:\n{}".format(args[0],json.dumps(whale)),parse_mode=ParseMode.MARKDOWN)
