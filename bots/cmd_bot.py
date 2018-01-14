@@ -2,6 +2,7 @@ from kafka import KafkaConsumer,TopicPartition
 import json
 import os, time, datetime
 from telegram.ext import Updater,CommandHandler
+from telegram import ParseMode
 rose_host = os.environ['ROSE_HOST']
 updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
 dispatcher = updater.dispatcher
@@ -9,7 +10,7 @@ result = {}
 maxkey = 0
 
 def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!")
+    bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!",parse_mode=ParseMode.MARKDOWN)
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
@@ -60,9 +61,9 @@ def count_order(bot, update, args):
                         break
                 if result.get(maxkey) is not None:
                     result[maxkey] = result[maxkey] - total
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result:{} - *last price {}*".format(args[0],json.dumps(result),last_price))
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result:{} - *last price {}*".format(args[0],json.dumps(result),last_price),parse_mode=ParseMode.MARKDOWN)
     if whale != {}:
-        bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:{}".format(args[0],json.dumps(whale)))
+        bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:{}".format(args[0],json.dumps(whale)),parse_mode=ParseMode.MARKDOWN)
 count_order_handler = CommandHandler('co', count_order, pass_args=True)
 dispatcher.add_handler(count_order_handler)
 
@@ -90,7 +91,7 @@ def count_no_sell_order(bot, update, args):
             price = price if price > 10 else price * 10
             if otype == 'BUY':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of BUY:{}".format(args[0],json.dumps(result)))
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of BUY:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
 count_order_no_sell_handler = CommandHandler('cons', count_no_sell_order, pass_args=True)
 dispatcher.add_handler(count_order_no_sell_handler)
 
@@ -118,7 +119,7 @@ def count_sell_order(bot, update, args):
             price = price if price > 10 else price * 10
             if otype == 'SELL':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of SELL:{}".format(args[0],json.dumps(result)))
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin {} result of SELL:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
 count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=True)
 dispatcher.add_handler(count_sell_order_handler)
 
@@ -130,7 +131,7 @@ def fibo_config(bot, update, args):
     with open("config/fibo.json", "w") as fiboFile:
         fiboFile.write(json.dumps(fibo))
         fiboFile.close()
-    bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n"+ args[0] + "'s fibo is " + json.dumps(fibo[args[0]]))
+    bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n"+ args[0] + "'s fibo is " + json.dumps(fibo[args[0]]),parse_mode=ParseMode.MARKDOWN)
 fibo_handler = CommandHandler('fibo', fibo_config, pass_args=True)
 dispatcher.add_handler(fibo_handler)
 
@@ -146,7 +147,7 @@ def follow_config(bot, update, args):
     with open("config/follow.json", "w") as followFile:
         followFile.write(json.dumps(follow))
         followFile.close()
-    bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n Follow list is " + json.dumps(follow))
+    bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n Follow list is " + json.dumps(follow),parse_mode=ParseMode.MARKDOWN)
 follow_handler = CommandHandler('follow', follow_config, pass_args=True)
 dispatcher.add_handler(follow_handler)
 
@@ -159,7 +160,7 @@ def list_data(bot, update, args):
     message = {
         "coins": listCoin()
     }[args[0]]
-    bot.send_message(chat_id=update.message.chat_id, text="Your list of coins is below, My Lord !!!\n" + json.dumps(message))
+    bot.send_message(chat_id=update.message.chat_id, text="Your list of coins is below, My Lord !!!\n" + json.dumps(message),parse_mode=ParseMode.MARKDOWN)
 list_data_handler = CommandHandler('list', list_data, pass_args=True)
 dispatcher.add_handler(list_data_handler)
 
