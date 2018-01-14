@@ -181,22 +181,16 @@ dispatcher.add_handler(my_balance_handler)
 #     bot.send_message(chat_id=update.message.chat_id, text="Your list of coins is below, My Lord !!!\n" + json.dumps(message),parse_mode=ParseMode.MARKDOWN)
 # list_data_handler = CommandHandler('list', list_data, pass_args=True)
 # dispatcher.add_handler(list_data_handler)
+
 def error_callback(bot, update, error):
     try:
         raise error
     except Unauthorized:
-        # remove update.message.chat_id from conversation list
     except BadRequest:
-        # handle malformed requests - read more below!
     except TimedOut:
-        # handle slow connection problems
     except NetworkError:
-        # handle other connection problems
     except ChatMigrated as e:
-        # the chat_id of a group has changed, use e.new_chat_id instead
     except TelegramError:
-        # handle all other telegram related errors
-
 dispatcher.add_error_handler(error_callback)
 
 updater.start_polling()
