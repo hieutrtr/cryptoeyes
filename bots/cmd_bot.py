@@ -138,10 +138,10 @@ dispatcher.add_handler(count_sell_order_handler)
 
 def my_balance(bot, update, args):
     message = ""
+    sum_btc = 0
     for ba in bittrex.get_balances()["result"]:
         if ba["Balance"] != 0:
             ticker = "N/A"
-            sum_btc = 0
             if ba["Currency"] not in ['BTC','USDT']:
                 ticker = bittrex.get_ticker("BTC-"+ba["Currency"])["result"]["Last"]*ba["Balance"]
                 sum_btc += ticker
