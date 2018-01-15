@@ -28,7 +28,7 @@ coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
 with open(dir_path+"/../config/coin_list.json") as coinListFile:
     coins = json.load(coinListFile)
     coinListFile.close()
-columns = ["market_cap_usd", "price_usd", "price_btc", "percent_change_7d", "percent_change_1h", "rank", "day_volume_usd"]
+columns = ["market_cap_usd", "price_usd", "price_btc", "percent_change_24h","percent_change_7d", "percent_change_1h", "rank", "day_volume_usd"]
 gauge_metrics = dict()
 for col in columns:
     gauge_metrics[col] = Gauge(col, 'Marketcap gauge data', ['id', 'name'])
