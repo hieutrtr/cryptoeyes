@@ -90,12 +90,17 @@ def cap_alert(bot, job):
     start_http_server(8000)
     consumer.subscribe(topics=topics)
     bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+    check_dup = ""
     for msg in consumer:
         print(msg)
         print(msg.value.decode('ascii'))
         value = json.loads(msg.value.decode('ascii'))
         payload = ''
         coin_id = value['id'].replace('-', '_')
+        if check_dup == coin_id:
+            continue
+        else:
+            check_dup = coin_id
         for col in columns:
             if col == "day_volume_usd":
                 metric_val = float(value.get("24h_volume_usd",0.0)) if value.get("24h_volume_usd",0.0) is not None else 0.0
