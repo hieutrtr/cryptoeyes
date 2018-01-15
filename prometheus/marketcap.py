@@ -110,7 +110,7 @@ def cap_alert(bot, job):
                 else:
                     bitres = bittrex.get_marketsummary("BTC-"+symbol)
                 if bitres.get("success") == True:
-                    if metric_val > 5 or metric_val < -5:
+                    if metric_val > 10 or metric_val < -10:
                         btc_last = bittrex.get_marketsummary("USDT-BTC")["result"]["Last"]
                         message = '*{} ({})* capacity (*{}*) is changed *{}* percent in 24 hours with volume *{}*\n'.format(coin_id,symbol,cap,metric_val,volume/btc_last)
                         bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
