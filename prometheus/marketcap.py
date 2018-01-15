@@ -102,7 +102,7 @@ def cap_alert(bot, job):
             else:
                 metric_val = float(value.get(col,0.0)) if value.get(col,0.0) is not None else 0.0
             if col == "percent_change_24h":
-                volume = value.get('24h_volume_usd',0.0)
+                volume = float(value.get('24h_volume_usd',0.0))
                 symbol = value.get('symbol',0.0)
                 cap = value.get("market_cap_usd",0.0)
                 if symbol == 'BTC':
