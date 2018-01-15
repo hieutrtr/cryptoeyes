@@ -55,7 +55,7 @@ def count_order(bot, update, args):
                 price = int(str(int(str(price)[2:]))[:2])
             price = price if price > 10 else price * 10
             if alert_limit < total:
-                whale[value['Price']] = '*{} {}*'.format('B' if otype == 'BUY' else 'S',total)
+                whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
             if otype == 'BUY':
                 if price > maxkey:
                     maxkey = price
