@@ -101,7 +101,7 @@ def cap_alert(bot, job):
                 metric_val = float(value.get("24h_volume_usd",0.0)) if value.get("24h_volume_usd",0.0) is not None else 0.0
             else:
                 metric_val = float(value.get(col,0.0)) if value.get(col,0.0) is not None else 0.0
-            if col == "market_cap_usd":
+            if col == "percent_change_24h":
                 volume = value.get('24h_volume_usd',0.0)
                 symbol = value.get('symbol',0.0)
                 if symbol == 'BTC':
@@ -109,7 +109,7 @@ def cap_alert(bot, job):
                 else:
                     bitres = bittrex.get_marketsummary("BTC-"+symbol)
                 if bitres.get("success") == True:
-                    if percent_change_24h > 5 or percent_change_24h < -5:
+                    if metric_val > 5 or metric_val < -5:
                         message = '*{} ({})* capacity is changed *{}* percent in 24 hours with volume *{}*\n'.format(coin_id,symbol,percent_change_24h,volume)
                         bot.send_message(chat_id='423404239',text="",parse_mode=ParseMode.MARKDOWN)
                     # message = cap_check(volume,symbol,coin_id,metric_val)

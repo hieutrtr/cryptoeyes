@@ -149,7 +149,9 @@ def my_balance(bot, update, args):
         if ba["Balance"] != 0:
             ticker = "N/A"
             if ba["Currency"] not in ['BTC','USDT']:
-                ticker = bittrex.get_ticker("BTC-"+ba["Currency"])["result"]["Last"]*ba["Balance"]
+                ticker = bittrex.get_ticker("BTC-"+ba["Currency"])["result"]
+                last_price = ticker["Last"] if ticker["Last"] else 0.0
+                ticker = last_price*ba["Balance"]
                 sum_btc += ticker
             elif ba["Currency"] == 'BTC':
                 sum_btc += ba["Balance"]
