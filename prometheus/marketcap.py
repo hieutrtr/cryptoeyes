@@ -28,7 +28,7 @@ coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
 with open(dir_path+"/../config/coin_list.json") as coinListFile:
     coins = json.load(coinListFile)
     coinListFile.close()
-columns = ["market_cap_usd", "price_usd", "price_btc", "percent_change_7d", "percent_change_1h", "rank"]
+columns = ["market_cap_usd", "price_usd", "price_btc", "percent_change_7d", "percent_change_1h", "rank", "day_volume_usd"]
 gauge_metrics = dict()
 for col in columns:
     gauge_metrics[col] = Gauge(col, 'Marketcap gauge data', ['id', 'name'])
@@ -97,7 +97,10 @@ def cap_alert(bot, job):
         payload = ''
         coin_id = value['id'].replace('-', '_')
         for col in columns:
-            metric_val = float(value.get(col,0.0)) if value.get(col,0.0) is not None else 0.0
+            if col == "day_volume_usd":
+                metric_val = float(value.get("24h_volume_usd",0.0)) if value.get("24h_volume_usd",0.0) is not None else 0.0
+            else:
+                metric_val = float(value.get(col,0.0)) if value.get(col,0.0) is not None else 0.0
             if col == "market_cap_usd":
                 volume = value.get('24h_volume_usd',0.0)
                 symbol = value.get('symbol',0.0)
@@ -106,19 +109,22 @@ def cap_alert(bot, job):
                 else:
                     bitres = bittrex.get_marketsummary("BTC-"+symbol)
                 if bitres.get("success") == True:
-                    message = cap_check(volume,symbol,coin_id,metric_val)
-                    if message is not None:
-                        print(message)
-                        bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
-                        if coin_id == "bitcoin":
-                            price_usd_mess = float(value.get("price_usd",0.0)) if value.get("price_usd",0.0) is not None else 0.0
-                            message = price_check(coin_id,price_usd_mess)
-                        else:
-                            price_btc_mess = float(value.get("price_btc",0.0)) if value.get("price_btc",0.0) is not None else 0.0
-                            message = price_check(coin_id,price_btc_mess)
-                        if message is not None:
-                            print(message)
-                            bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
+                    if percent_change_24h > 5 or percent_change_24h < -5:
+                        message = '*{} ({})* capacity is changed *{}* percent in 24 hours with volume *{}*\n'.format(coin_id,symbol,percent_change_24h,volume)
+                        bot.send_message(chat_id='423404239',text="",parse_mode=ParseMode.MARKDOWN)
+                    # message = cap_check(volume,symbol,coin_id,metric_val)
+                    # if message is not None:
+                    #     print(message)
+                    #     bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
+                    #     if coin_id == "bitcoin":
+                    #         price_usd_mess = float(value.get("price_usd",0.0)) if value.get("price_usd",0.0) is not None else 0.0
+                    #         message = price_check(coin_id,price_usd_mess)
+                    #     else:
+                    #         price_btc_mess = float(value.get("price_btc",0.0)) if value.get("price_btc",0.0) is not None else 0.0
+                    #         message = price_check(coin_id,price_btc_mess)
+                    #     if message is not None:
+                    #         print(message)
+                    #         bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
             gauge_metrics[col].labels(coin_id, value['name']).set(metric_val)
 
 job.run_repeating(cap_alert, interval=3600 * 24 * 60, first=0)
