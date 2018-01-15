@@ -111,7 +111,7 @@ def cap_alert(bot, job):
                 if bitres.get("success") == True:
                     if metric_val > 5 or metric_val < -5:
                         message = '*{} ({})* capacity is changed *{}* percent in 24 hours with volume *{}*\n'.format(coin_id,symbol,metric_val,volume)
-                        bot.send_message(chat_id='423404239',text="",parse_mode=ParseMode.MARKDOWN)
+                        bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
                     # message = cap_check(volume,symbol,coin_id,metric_val)
                     # if message is not None:
                     #     print(message)
