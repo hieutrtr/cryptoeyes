@@ -40,6 +40,7 @@ consumer = KafkaConsumer(bootstrap_servers=rose_host,group_id='prometheus',auto_
 def cap_check(volume,symbol,coin_id,value):
     ts = time.time()
     url = 'http://' + prom_host+'/api/v1/query?query=market_cap_usd{id="%s"}&time=%d' % (coin_id,int(ts)-DAY/2,)
+    print("cap_check_url:",url)
     r = requests.get(url=url)
     if r.status_code >= 400: r.raise_for_status()
     res = r.json()
@@ -66,7 +67,7 @@ def price_check(coin_id,value):
         url = 'http://' + prom_host+'/api/v1/query?query=price_usd{id="%s"}&time=%d' % (coin_id,int(ts)-DAY/2,)
     else:
         url = 'http://' + prom_host+'/api/v1/query?query=price_btc{id="%s"}&time=%d' % (coin_id,int(ts)-DAY/2,)
-
+    print("price_check_url",url)
     r = requests.get(url=url)
     if r.status_code >= 400: r.raise_for_status()
     res = r.json()
