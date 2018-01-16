@@ -107,18 +107,20 @@ def cap_alert(bot, job):
             else:
                 metric_val = float(value.get(col,0.0)) if value.get(col,0.0) is not None else 0.0
             if col == "percent_change_24h":
+                btc_last = bittrex.get_marketsummary("USDT-BTC")["result"][0]["Last"]
                 volume = float(value.get('24h_volume_usd',0.0))
-                symbol = value.get('symbol',0.0)
-                cap = value.get("market_cap_usd",0.0)
-                if symbol == 'BTC':
-                    bitres = bittrex.get_marketsummary("USDT-BTC")
-                else:
-                    bitres = bittrex.get_marketsummary("BTC-"+symbol)
-                if bitres.get("success") == True:
-                    if metric_val > 10 or metric_val < -10:
-                        btc_last = bittrex.get_marketsummary("USDT-BTC")["result"][0]["Last"]
-                        message = '*{} ({})* capacity (*{}*) is changed *{}* percent in 24 hours with volume *{}*\n'.format(coin_id,symbol,cap,metric_val,volume/btc_last)
-                        bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
+                btc_volume = volume/btc_last
+                if btc_volume > 5000:
+                    symbol = value.get('symbol',0.0)
+                    cap = value.get("market_cap_usd",0.0)
+                    if symbol == 'BTC':
+                        bitres = bittrex.get_marketsummary("USDT-BTC")
+                    else:
+                        bitres = bittrex.get_marketsummary("BTC-"+symbol)
+                    if bitres.get("success") == True:
+                        if metric_val > 10 or metric_val < -10:
+                            message = '*{} ({})* capacity (*{}*) is changed *{}* percent in 24 hours with volume *{}*\n'.format(coin_id,symbol,cap,metric_val,btc_volume)
+                            bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
                     # message = cap_check(volume,symbol,coin_id,metric_val)
                     # if message is not None:
                     #     print(message)
