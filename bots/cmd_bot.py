@@ -33,6 +33,7 @@ def count_order(bot, update, args):
     id_cache = []
     alert_limit = int(args[2])
     last_price = 0
+    message = ""
     for bd in range(int(args[1])-1,-1,-1):
         whale = {}
         backward_time = int(time.time()) - (bd * 86400)
