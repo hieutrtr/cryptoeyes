@@ -34,8 +34,8 @@ def count_order(bot, update, args):
     alert_limit = int(args[2])
     last_price = 0
     message = ""
+    whale = {}
     for bd in range(int(args[1])-1,-1,-1):
-        whale = {}
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
         consumer = KafkaConsumer(args[0] + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=5000,max_partition_fetch_bytes=10485760,max_poll_records=100000)
