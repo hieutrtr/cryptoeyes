@@ -49,7 +49,9 @@ def count_order(bot, update, args):
             price = value['Price']
             total = value['Total']
             price = str(price)
-            if 'e' in price:
+            if args[0][8:] == 'USDT-BTC':
+                price = int(price[:2])
+            elif 'e' in price:
                 price = int(str(price)[:-4].replace('.','')[:2])
             else:
                 price = int(str(int(str(price)[2:]))[:2])
