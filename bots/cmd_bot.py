@@ -32,9 +32,9 @@ def count_order(bot, update, args):
     maxkey = 0
     id_cache = []
     alert_limit = int(args[2])
-    last_price = 0
     message = ""
     whale = {}
+    last_price = bittrex.get_marketsummary(args[0][8:])["result"][0]["Last"]
     for bd in range(int(args[1])-1,-1,-1):
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
@@ -47,7 +47,6 @@ def count_order(bot, update, args):
             id_cache.append(order_id)
             otype = value['OrderType']
             price = value['Price']
-            last_price = price
             total = value['Total']
             price = str(price)
             if 'e' in price:
