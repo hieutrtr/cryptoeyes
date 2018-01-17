@@ -59,7 +59,7 @@ def count_order(bot, update, args):
                             price_count+=4
                             break
                         price_count+=1
-                price = int(prices[:price_count])
+                price = int(price[:price_count])
 
             # workaround price tag
             if price < 10 or price % 10 == 0 :
