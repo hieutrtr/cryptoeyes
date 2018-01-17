@@ -57,14 +57,8 @@ def count_order(bot, update, args):
                 price = int(str(int(str(price)[2:]))[:2])
 
             # workaround price tag
-            if price < 10 :
+            if price < 10 or price % 10 == 0 :
                 price = price * 10
-            else:
-                if price >= 10 and price <= 50:
-                    for k,v in result.items():
-                        if k >= 90:
-                            price = price * 10
-                            break
             # price = price if price > 10 else price * 10
             if alert_limit < total:
                 whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
@@ -124,14 +118,8 @@ def count_no_sell_order(bot, update, args):
                 price = int(str(int(str(price)[2:]))[:2])
 
             # workaround price tag
-            if price < 10 :
+            if price < 10 or price % 10 == 0 :
                 price = price * 10
-            else:
-                if price >= 10 and price <= 50:
-                    for k,v in result.items():
-                        if k >= 90:
-                            price = price * 10
-                            break
 
             # price = price if price > 10 else price * 10
             if otype == 'BUY':
@@ -170,14 +158,8 @@ def count_sell_order(bot, update, args):
             else:
                 price = int(str(int(str(price)[2:]))[:2])
             # workaround price tag
-            if price < 10 :
+            if price < 10 or price % 10 == 0 :
                 price = price * 10
-            else:
-                if price >= 10 and price <= 50:
-                    for k,v in result.items():
-                        if k >= 90:
-                            price = price * 10
-                            break
             # price = price if price > 10 else price * 10
             if otype == 'SELL':
                 result[price] = total if result.get(price) is None else total + result.get(price)
