@@ -49,22 +49,17 @@ def count_order(bot, update, args):
             otype = value['OrderType']
             price = value['Price']
             total = value['Total']
-            price = '{0:.10f}'.format(price)
             if args[0][8:] == 'USDT-BTC':
-                price = int(price[:3])
+                price = (int(price)/1000)*1000
             else:
+                price = '{0:.10f}'.format(price)
                 if price_count == 0:
                     for p in price[2:]:
                         if p != '0':
                             price_count+=4
                             break
                         price_count+=1
-                price = int(price[:price_count])
-
-            # workaround price tag
-            if price < 10 or price % 10 == 0 :
-                price = price * 10
-            # price = price if price > 10 else price * 10
+                price = float(price[:price_count])
             if alert_limit < total:
                 whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
             if otype == 'BUY':
@@ -74,20 +69,27 @@ def count_order(bot, update, args):
             else:
                 if maxkey == 0 or total == 0:
                     continue
+                trykey = 0
+                stepkey = 1
                 while result[maxkey] % total == result[maxkey]:
                     total = total - result[maxkey]
                     del result[maxkey]
                     while result.get(maxkey) is None:
-                        maxkey-=1
-                        if maxkey == 0:
+                        if args[0][8:] == 'USDT-BTC':
+                            trykey = maxkey-stepkey*1000
+                        else:
+                            trykey = maxkey-stepkey*float(1)/(float(10**(price_count-2)))
+                        stepkey+=1
+                        if trykey == 0:
                             break
-                    if maxkey == 0:
+                    maxkey = trykey
+                    if trykey == 0:
                         break
                 if result.get(maxkey) is not None:
                     result[maxkey] = result[maxkey] - total
-                message = ""
-                for k,v in result.items():
-                    message += 'at *{}* have *{}*\n'.format(k,v)
+    message = ""
+    for k,v in result.items():
+        message += 'at *{}* have *{}*\n'.format(k,v)
     bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* :\n{} \n *last price {}*".format(args[0],message,last_price),parse_mode=ParseMode.MARKDOWN)
     if whale != {}:
         message = ""
@@ -100,6 +102,7 @@ dispatcher.add_handler(count_order_handler)
 def count_no_sell_order(bot, update, args):
     result = {}
     id_cache = []
+    price_count = 0
     for bd in range(int(args[1])-1,-1,-1):
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
@@ -113,34 +116,30 @@ def count_no_sell_order(bot, update, args):
             otype = value['OrderType']
             price = value['Price']
             total = value['Total']
-            price = str(price)
-
             if args[0][8:] == 'USDT-BTC':
-                price = int(price[:2])
-            elif 'e' in price:
-                price = int(str(price)[:-4].replace('.','')[:2])
+                price = (int(price)/1000)*1000
             else:
-                price = int(str(int(str(price)[2:]))[:2])
-
-            # workaround price tag
-            if price < 10 or price % 10 == 0 :
-                price = price * 10
-
-            # price = price if price > 10 else price * 10
+                price = '{0:.10f}'.format(price)
+                if price_count == 0:
+                    for p in price[2:]:
+                        if p != '0':
+                            price_count+=4
+                            break
+                        price_count+=1
+                price = float(price[:price_count])
             if otype == 'BUY':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-
-
     message = ""
     for k,v in result.items():
         message += 'at *{}* have *{}*\n'.format(k,v)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of BUY:\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* (BUY):\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_order_no_sell_handler = CommandHandler('cons', count_no_sell_order, pass_args=True)
 dispatcher.add_handler(count_order_no_sell_handler)
 
 def count_sell_order(bot, update, args):
     result = {}
     id_cache = []
+    price_count = 0
     for bd in range(int(args[1])-1,-1,-1):
         backward_time = int(time.time()) - (bd * 86400)
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
@@ -154,24 +153,23 @@ def count_sell_order(bot, update, args):
             otype = value['OrderType']
             price = value['Price']
             total = value['Total']
-            price = str(price)
-
             if args[0][8:] == 'USDT-BTC':
-                price = int(price[:2])
-            elif 'e' in price:
-                price = int(str(price)[:-4].replace('.','')[:2])
+                price = (int(price)/1000)*1000
             else:
-                price = int(str(int(str(price)[2:]))[:2])
-            # workaround price tag
-            if price < 10 or price % 10 == 0 :
-                price = price * 10
-            # price = price if price > 10 else price * 10
+                price = '{0:.10f}'.format(price)
+                if price_count == 0:
+                    for p in price[2:]:
+                        if p != '0':
+                            price_count+=4
+                            break
+                        price_count+=1
+                price = float(price[:price_count])
             if otype == 'SELL':
                 result[price] = total if result.get(price) is None else total + result.get(price)
     message = ""
     for k,v in result.items():
         message += 'at *{}* have *{}*\n'.format(k,v)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of SELL:\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* (SELL):\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=True)
 dispatcher.add_handler(count_sell_order_handler)
 
