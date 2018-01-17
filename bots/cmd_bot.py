@@ -57,7 +57,7 @@ def count_order(bot, update, args):
                 price = int(str(int(str(price)[2:]))[:2])
 
             # workaround price tag
-            if price < 10 or price % 10 == 0 :
+            if price < 10 :
                 price = price * 10
             # price = price if price > 10 else price * 10
             if alert_limit < total:
