@@ -55,7 +55,17 @@ def count_order(bot, update, args):
                 price = int(str(price)[:-4].replace('.','')[:2])
             else:
                 price = int(str(int(str(price)[2:]))[:2])
-            price = price if price > 10 else price * 10
+
+            # workaround price tag
+            if price < 10 :
+                price = price * 10
+            else:
+                if price >= 10 and price <= 50:
+                    for k,v in result.items():
+                        if k >= 90:
+                            price = price * 10
+                            break
+            # price = price if price > 10 else price * 10
             if alert_limit < total:
                 whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
             if otype == 'BUY':
@@ -105,14 +115,33 @@ def count_no_sell_order(bot, update, args):
             price = value['Price']
             total = value['Total']
             price = str(price)
-            if 'e' in price:
+
+            if args[0][8:] == 'USDT-BTC':
+                price = int(price[:2])
+            elif 'e' in price:
                 price = int(str(price)[:-4].replace('.','')[:2])
             else:
                 price = int(str(int(str(price)[2:]))[:2])
-            price = price if price > 10 else price * 10
+
+            # workaround price tag
+            if price < 10 :
+                price = price * 10
+            else:
+                if price >= 10 and price <= 50:
+                    for k,v in result.items():
+                        if k >= 90:
+                            price = price * 10
+                            break
+
+            # price = price if price > 10 else price * 10
             if otype == 'BUY':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of BUY:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
+
+
+    message = ""
+    for k,v in result.items():
+        message += 'at *{}* have *{}*\n'.format(k,v)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of BUY:\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_order_no_sell_handler = CommandHandler('cons', count_no_sell_order, pass_args=True)
 dispatcher.add_handler(count_order_no_sell_handler)
 
@@ -133,14 +162,29 @@ def count_sell_order(bot, update, args):
             price = value['Price']
             total = value['Total']
             price = str(price)
-            if 'e' in price:
+
+            if args[0][8:] == 'USDT-BTC':
+                price = int(price[:2])
+            elif 'e' in price:
                 price = int(str(price)[:-4].replace('.','')[:2])
             else:
                 price = int(str(int(str(price)[2:]))[:2])
-            price = price if price > 10 else price * 10
+            # workaround price tag
+            if price < 10 :
+                price = price * 10
+            else:
+                if price >= 10 and price <= 50:
+                    for k,v in result.items():
+                        if k >= 90:
+                            price = price * 10
+                            break
+            # price = price if price > 10 else price * 10
             if otype == 'SELL':
                 result[price] = total if result.get(price) is None else total + result.get(price)
-    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of SELL:{}".format(args[0],json.dumps(result)),parse_mode=ParseMode.MARKDOWN)
+    message = ""
+    for k,v in result.items():
+        message += 'at *{}* have *{}*\n'.format(k,v)
+    bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* result of SELL:\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=True)
 dispatcher.add_handler(count_sell_order_handler)
 
@@ -169,48 +213,6 @@ def sum_market(bot, update, args):
     bot.send_message(chat_id=update.message.chat_id, text='{}'.format(bittrex.get_marketsummary(args[0])),parse_mode=ParseMode.MARKDOWN)
 sum_market_handler = CommandHandler('sum', sum_market, pass_args=True)
 dispatcher.add_handler(sum_market_handler)
-
-#
-# def fibo_config(bot, update, args):
-#     with open("config/fibo.json") as fiboFile:
-#         fibo = json.load(fiboFile)
-#         fibo[args[0]] = {"bottom": float(args[1]), "top": float(args[2])}
-#         fiboFile.close()
-#     with open("config/fibo.json", "w") as fiboFile:
-#         fiboFile.write(json.dumps(fibo))
-#         fiboFile.close()
-#     bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n"+ args[0] + "'s fibo is " + json.dumps(fibo[args[0]]),parse_mode=ParseMode.MARKDOWN)
-# fibo_handler = CommandHandler('fibo', fibo_config, pass_args=True)
-# dispatcher.add_handler(fibo_handler)
-#
-# def follow_config(bot, update, args):
-#     follow = []
-#     with open("config/follow.json") as followFile:
-#         follow = json.load(followFile)
-#         if args[0] == "more":
-#             follow.extend(args[1:])
-#         else:
-#             follow = args
-#         followFile.close()
-#     with open("config/follow.json", "w") as followFile:
-#         followFile.write(json.dumps(follow))
-#         followFile.close()
-#     bot.send_message(chat_id=update.message.chat_id, text="As you wish, My Lord !!!\n Follow list is " + json.dumps(follow),parse_mode=ParseMode.MARKDOWN)
-# follow_handler = CommandHandler('follow', follow_config, pass_args=True)
-# dispatcher.add_handler(follow_handler)
-#
-# def list_data(bot, update, args):
-#     def listCoin():
-#         with open("config/coin_list.json") as listCoinFile:
-#             listCoin = json.load(listCoinFile)
-#             listCoinFile.close()
-#         return listCoin
-#     message = {
-#         "coins": listCoin()
-#     }[args[0]]
-#     bot.send_message(chat_id=update.message.chat_id, text="Your list of coins is below, My Lord !!!\n" + json.dumps(message),parse_mode=ParseMode.MARKDOWN)
-# list_data_handler = CommandHandler('list', list_data, pass_args=True)
-# dispatcher.add_handler(list_data_handler)
 
 def error_callback(bot, update, error):
     raise error
