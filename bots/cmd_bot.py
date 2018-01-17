@@ -34,6 +34,7 @@ def count_order(bot, update, args):
     alert_limit = int(args[2])
     message = ""
     whale = {}
+    price_count = 0
     last_price = bittrex.get_marketsummary(args[0][8:])["result"][0]["Last"]
     for bd in range(int(args[1])-1,-1,-1):
         backward_time = int(time.time()) - (bd * 86400)
@@ -48,16 +49,20 @@ def count_order(bot, update, args):
             otype = value['OrderType']
             price = value['Price']
             total = value['Total']
-            price = str(price)
+            price = '{0:.10f}'.format(price)
             if args[0][8:] == 'USDT-BTC':
-                price = int(price[:2])
-            elif 'e' in price:
-                price = int(str(price)[:-4].replace('.','')[:2])
+                price = int(price[:3])
             else:
-                price = int(str(int(str(price)[2:]))[:2])
+                if price_count == 0:
+                    for p in price[2:]:
+                        if p != '0':
+                            price_count+=4
+                            break
+                        price_count+=1
+                price = int(prices[:price_count])
 
             # workaround price tag
-            if price < 10 :
+            if price < 10 or price % 10 == 0 :
                 price = price * 10
             # price = price if price > 10 else price * 10
             if alert_limit < total:
