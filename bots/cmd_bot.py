@@ -1,10 +1,14 @@
 from kafka import KafkaConsumer,TopicPartition
 import json
 import os, time, datetime, sys
+
 from telegram.ext import Updater,CommandHandler
 from telegram import ParseMode
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
+updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
+dispatcher = updater.dispatcher
+
 import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,18 +18,11 @@ logger.setLevel(logging.DEBUG)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path+'/..')
 from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
-
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+
 rose_host = os.environ['ROSE_HOST']
-updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
-dispatcher = updater.dispatcher
 result = {}
 maxkey = 0
-
-def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!",parse_mode=ParseMode.MARKDOWN)
-start_handler = CommandHandler('start', start)
-dispatcher.add_handler(start_handler)
 
 def count_order(bot, update, args):
     result = {}
