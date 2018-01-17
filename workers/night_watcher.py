@@ -54,7 +54,7 @@ def watcher(bot, job):
             otype = value['OrderType']
             price = value['Price']
             total = value['Total']
-            if market == 'USDT-BTC':
+            if market[8:] == 'USDT-BTC':
                 price = (int(price)/1000)*1000
             else:
                 price = '{0:.10f}'.format(price)
@@ -72,7 +72,6 @@ def watcher(bot, job):
                     maxkey = price
                 if result.get(price) is None:
                     result[price] = total
-                    # wall_price = 10
                     if back_day - 1 == 0:
                         message = ""
                         for k,v in result.items():
@@ -104,7 +103,7 @@ def watcher(bot, job):
                                 message += 'at {} {}\n'.format(k,v)
                             bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                     while result.get(maxkey) is None:
-                        if market == 'USDT-BTC':
+                        if market[8:] == 'USDT-BTC':
                             trykey = maxkey-stepkey*1000
                         else:
                             trykey = maxkey-stepkey*float(1)/(float(10**(price_count-2)))
