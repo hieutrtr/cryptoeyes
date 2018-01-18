@@ -93,12 +93,11 @@ def watcher(bot, job):
                     else:
                         result[price] = total + result.get(price)
                 else:
-                    # if maxkey == 0 or total == 0:
-                    if total == 0:
+                    maxkey = find_biggest_key(result)
+                    if maxkey == 0 or total == 0:
                         continue
                     trykey = 0
                     stepkey = 1
-                    maxkey = find_biggest_key(result)
                     while result[maxkey] % total == result[maxkey]:
                         total = total - result[maxkey]
                         del result[maxkey]
