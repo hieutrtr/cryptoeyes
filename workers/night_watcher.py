@@ -46,83 +46,89 @@ def watcher(bot, job):
         partition = datetime.datetime.fromtimestamp(backward_time).strftime('%Y-%m-%d')
         consumer = KafkaConsumer(market + '.history.' + partition,bootstrap_servers=rose_host,auto_offset_reset='earliest',consumer_timeout_ms=consumer_timeout,max_partition_fetch_bytes=10485760,max_poll_records=100000)
         for msg in consumer:
-            value = json.loads(msg.value.decode('ascii'))
-            order_id = value['Id']
-            if order_id in id_cache:
-                continue
-            id_cache.append(order_id)
-            otype = value['OrderType']
-            price = value['Price']
-            total = value['Total']
-            if market[8:] == 'USDT-BTC':
-                price = (int(price)/1000)*1000
-            else:
-                price = '{0:.10f}'.format(price)
-                if price_count == 0:
-                    for p in price[2:]:
-                        if p != '0':
-                            price_count+=4
-                            break
-                        price_count+=1
-                price = float(price[:price_count])
-            if alert_limit < total:
-                whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
-            if otype == 'BUY':
-                if price > maxkey:
-                    maxkey = price
-                if result.get(price) is None:
-                    result[price] = total
-                    if back_day - 1 == 0:
-                        message = ""
-                        for k,v in result.items():
-                            message += 'at *{}* have *{}*\n'.format(k,v)
-                        bot.send_message(chat_id='423404239', text="*Watcher {}* new wall is building up at {}\n{}".format(market,price,message),parse_mode=ParseMode.MARKDOWN)
-                        if whale != {}:
-                            message = ""
-                            for k,v in whale.items():
-                                message += 'at {} {}\n'.format(k,v)
-                            bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
-                else:
-                    result[price] = total + result.get(price)
-            else:
-                if maxkey == 0 or total == 0:
+            try:
+                value = json.loads(msg.value.decode('ascii'))
+                order_id = value['Id']
+                if order_id in id_cache:
                     continue
-                trykey = 0
-                stepkey = 1
-                while result[maxkey] % total == result[maxkey]:
-                    total = total - result[maxkey]
-                    del result[maxkey]
-                    if back_day - 1 == 0:
-                        message = ""
-                        for k,v in result.items():
-                            message += 'at *{}* have *{}*\n'.format(k,v)
-                        bot.send_message(chat_id='423404239', text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
-                        if whale != {}:
+                id_cache.append(order_id)
+                otype = value['OrderType']
+                price = value['Price']
+                total = value['Total']
+                if market[8:] == 'USDT-BTC':
+                    price = (int(price)/1000)*1000
+                else:
+                    price = '{0:.10f}'.format(price)
+                    if price_count == 0:
+                        for p in price[2:]:
+                            if p != '0':
+                                price_count+=4
+                                break
+                            price_count+=1
+                    price = float(price[:price_count])
+                if alert_limit < total:
+                    whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
+                if otype == 'BUY':
+                    if price > maxkey:
+                        maxkey = price
+                    if result.get(price) is None:
+                        result[price] = total
+                        if back_day - 1 == 0:
                             message = ""
-                            for k,v in whale.items():
-                                message += 'at {} {}\n'.format(k,v)
-                            bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
-                    while result.get(maxkey) is None:
-                        if market[8:] == 'USDT-BTC':
-                            trykey = maxkey-stepkey*1000
-                        else:
-                            trykey = maxkey-stepkey*float(1)/(float(10**(price_count-2)))
-                        stepkey+=1
+                            for k,v in result.items():
+                                message += 'at *{}* have *{}*\n'.format(k,v)
+                            bot.send_message(chat_id='423404239', text="*Watcher {}* new wall is building up at {}\n{}".format(market,price,message),parse_mode=ParseMode.MARKDOWN)
+                            if whale != {}:
+                                message = ""
+                                for k,v in whale.items():
+                                    message += 'at {} {}\n'.format(k,v)
+                                bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                    else:
+                        result[price] = total + result.get(price)
+                else:
+                    if maxkey == 0 or total == 0:
+                        continue
+                    trykey = 0
+                    stepkey = 1
+                    while result[maxkey] % total == result[maxkey]:
+                        total = total - result[maxkey]
+                        del result[maxkey]
+                        if back_day - 1 == 0:
+                            message = ""
+                            for k,v in result.items():
+                                message += 'at *{}* have *{}*\n'.format(k,v)
+                            bot.send_message(chat_id='423404239', text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
+                            if whale != {}:
+                                message = ""
+                                for k,v in whale.items():
+                                    message += 'at {} {}\n'.format(k,v)
+                                bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                        while result.get(maxkey) is None:
+                            if market[8:] == 'USDT-BTC':
+                                trykey = maxkey-stepkey*1000
+                            else:
+                                trykey = maxkey-stepkey*float(1)/(float(10**(price_count-2)))
+                            stepkey+=1
+                            if trykey == 0:
+                                break
+                        maxkey = trykey
                         if trykey == 0:
                             break
-                    maxkey = trykey
-                    if trykey == 0:
-                        break
-                if result.get(maxkey) is not None:
-                    result[maxkey] = result[maxkey] - total
-        message = ""
-        for k,v in result.items():
-            message += 'at *{}* have *{}*\n'.format(k,v)
-        bot.send_message(chat_id='423404239', text="*Watcher {}* :\n{} \n *last price {}*".format(market,message,last_price),parse_mode=ParseMode.MARKDOWN)
-        if whale != {}:
+                    if result.get(maxkey) is not None:
+                        result[maxkey] = result[maxkey] - total
+            except Exception as e:
+                print(e)
+        try:
             message = ""
-            for k,v in whale.items():
-                message += 'at {} {}\n'.format(k,v)
-            bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+            for k,v in result.items():
+                message += 'at *{}* have *{}*\n'.format(k,v)
+            bot.send_message(chat_id='423404239', text="*Watcher {}* :\n{} \n *last price {}*".format(market,message,last_price),parse_mode=ParseMode.MARKDOWN)
+            if whale != {}:
+                message = ""
+                for k,v in whale.items():
+                    message += 'at {} {}\n'.format(k,v)
+                bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+        except Exception as e:
+            print(e)
 job.run_repeating(watcher, interval=3600*24*365, first=0)
 job.start()
