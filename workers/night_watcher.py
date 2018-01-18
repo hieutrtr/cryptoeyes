@@ -21,12 +21,19 @@ updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
 dispatcher = updater.dispatcher
 job = updater.job_queue
 
+def find_biggest_key(mydict):
+    bg = 0
+    for k,v in mydict.items():
+        if k > bg:
+            bg = k
+    return bg
+
 def watcher(bot, job):
     alert_limit = os.environ['ALERT_LIMIT']
     market = os.environ['MARKET']
     back_day = int(os.environ['BACK_DAY'])
     result = {}
-    maxkey = 0
+    # maxkey = 0
     message = ""
     last_price = bittrex.get_marketsummary(market[8:])["result"][0]["Last"]
     wall_price = 10 # btc
@@ -69,8 +76,8 @@ def watcher(bot, job):
                 if alert_limit < total:
                     whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
                 if otype == 'BUY':
-                    if price > maxkey:
-                        maxkey = price
+                    # if price > maxkey:
+                    #     maxkey = price
                     if result.get(price) is None:
                         result[price] = total
                         if back_day - 1 == 0:
@@ -86,10 +93,12 @@ def watcher(bot, job):
                     else:
                         result[price] = total + result.get(price)
                 else:
-                    if maxkey == 0 or total == 0:
+                    # if maxkey == 0 or total == 0:
+                    if total == 0:
                         continue
                     trykey = 0
                     stepkey = 1
+                    maxkey = find_biggest_key(result)
                     while result[maxkey] % total == result[maxkey]:
                         total = total - result[maxkey]
                         del result[maxkey]

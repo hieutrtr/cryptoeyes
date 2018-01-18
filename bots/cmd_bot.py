@@ -24,6 +24,13 @@ rose_host = os.environ['ROSE_HOST']
 result = {}
 maxkey = 0
 
+def find_biggest_key(mydict):
+    bg = 0
+    for k,v in mydict.items():
+        if k > bg:
+            bg = k
+    return bg
+
 def count_order(bot, update, args):
     result = {}
     maxkey = 0
