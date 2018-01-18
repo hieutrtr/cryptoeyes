@@ -22,7 +22,7 @@ bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 
 rose_host = os.environ['ROSE_HOST']
 result = {}
-maxkey = 0
+# maxkey = 0
 
 def find_biggest_key(mydict):
     bg = 0
@@ -33,7 +33,7 @@ def find_biggest_key(mydict):
 
 def count_order(bot, update, args):
     result = {}
-    maxkey = 0
+    # maxkey = 0
     id_cache = []
     alert_limit = int(args[2])
     message = ""
@@ -67,14 +67,16 @@ def count_order(bot, update, args):
             if alert_limit < total:
                 whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
             if otype == 'BUY':
-                if price > maxkey:
-                    maxkey = price
+                # if price > maxkey:
+                #     maxkey = price
                 result[price] = total if result.get(price) is None else total + result.get(price)
             else:
-                if maxkey == 0 or total == 0:
+                # if maxkey == 0 or total == 0:
+                if total == 0:
                     continue
                 trykey = 0
                 stepkey = 1
+                maxkey = find_biggest_key(result)
                 while result[maxkey] % total == result[maxkey]:
                     total = total - result[maxkey]
                     del result[maxkey]
