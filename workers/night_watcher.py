@@ -151,5 +151,3 @@ def watcher(bot, job):
             print(e)
 job.run_repeating(watcher, interval=3600*24*365, first=0)
 job.start()
-
-BOT_TOKEN=495644071:AAFNAdC6MNJWRoFqTGj4WU5tragMNPsGkd0 ROSE_HOST=10.146.0.2:9092 CRYPTOEYES_KEY=e65776a9c6b84d08aa668930609d14c2 CRYPTOEYES_SEC=374dfad955854242a8c1e166522c01d7 MARKET=bittrex.BTC-ETH BACK_DAY=9 ALERT_LIMIT=5 python workers/night_watcher.py
