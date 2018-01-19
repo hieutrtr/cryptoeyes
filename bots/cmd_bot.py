@@ -69,8 +69,6 @@ def count_order(bot, update, args):
                 whale_value = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["Price"])
                 whale[moment] = [whale_value] if whale.get(moment) is None else whale[moment].append(whale_value)
             if otype == 'BUY':
-                # if price > maxkey:
-                #     maxkey = price
                 result[price] = total if result.get(price) is None else total + result.get(price)
             else:
                 maxkey = find_biggest_key(result)
@@ -101,7 +99,7 @@ def count_order(bot, update, args):
     if whale != {}:
         message = ""
         for k in sorted(result.iterkeys()):
-            message += '*{}* have\n{}\n'.format(k,'\n',join(result[k]))
+            message += '*{}* have\n{}\n'.format(k,'\n'.join(result[k]))
         bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_order_handler = CommandHandler('co', count_order, pass_args=True)
 dispatcher.add_handler(count_order_handler)
