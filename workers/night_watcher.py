@@ -75,7 +75,7 @@ def watcher(bot, job):
                     price = float(price[:price_count])
                 if alert_limit < total:
                     moment = value["TimeStamp"].split(':')[0]
-                    whale_value = '*{}* at *{}*'.format(total,value["Price"])
+                    whale_value = '*{}* at {}'.format(total,value["Price"])
                     if whale.get(moment, None) is None:
                         whale[moment] = {}
                         whale[moment]['BUY'] = []
@@ -114,7 +114,7 @@ def watcher(bot, job):
                             bot.send_message(chat_id='423404239', text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
                                 moment = value["TimeStamp"].split(':')[0]
-                                whale_value = '*{}* at *{}*'.format(total,value["Price"])
+                                whale_value = '*{}* at {}'.format(total,value["Price"])
                                 if whale.get(moment, None) is None:
                                     whale[moment] = {}
                                     whale[moment]['BUY'] = []

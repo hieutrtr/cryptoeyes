@@ -66,7 +66,7 @@ def count_order(bot, update, args):
                 price = float(price[:price_count])
             if alert_limit < total:
                 moment = value["TimeStamp"].split(':')[0]
-                whale_value = '*{}* at *{}*'.format(total,value["Price"])
+                whale_value = '*{}* at {}'.format(total,value["Price"])
                 if whale.get(moment, None) is None:
                     whale[moment] = {}
                     whale[moment]['BUY'] = []
