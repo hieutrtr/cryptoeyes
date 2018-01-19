@@ -65,7 +65,9 @@ def count_order(bot, update, args):
                         price_count+=1
                 price = float(price[:price_count])
             if alert_limit < total:
-                whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
+                moment = ':'.join(value["TimeStamp"].split(':')[:-1])[:-1] + '0'
+                whale_value = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["Price"])
+                whale[moment] = [whale_value] if whale.get(moment) is None else whale[moment].append(whale_value)
             if otype == 'BUY':
                 # if price > maxkey:
                 #     maxkey = price
@@ -93,13 +95,13 @@ def count_order(bot, update, args):
                 if result.get(maxkey) is not None:
                     result[maxkey] = result[maxkey] - total
     message = ""
-    for k,v in result.items():
-        message += 'at *{}* have *{}*\n'.format(k,v)
+    for k in sorted(result.iterkeys()):
+        message += 'at *{}* have *{}*\n'.format(k,result[k])
     bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* :\n{} \n *last price {}*".format(args[0],message,last_price),parse_mode=ParseMode.MARKDOWN)
     if whale != {}:
         message = ""
-        for k,v in whale.items():
-            message += 'at {} {}\n'.format(k,v)
+        for k in sorted(result.iterkeys()):
+            message += '*{}* have\n{}\n'.format(k,'\n',join(result[k]))
         bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_order_handler = CommandHandler('co', count_order, pass_args=True)
 dispatcher.add_handler(count_order_handler)
