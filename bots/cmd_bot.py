@@ -6,7 +6,7 @@ from telegram.ext import Updater,CommandHandler
 from telegram import ParseMode
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
-updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
+updater = Updater(token=os.environ['BOT_TOKEN'])
 dispatcher = updater.dispatcher
 
 import logging

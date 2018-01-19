@@ -17,7 +17,7 @@ from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTE
 
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 rose_host = os.environ['ROSE_HOST']
-updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
+updater = Updater(token=os.environ['BOT_TOKEN'])
 dispatcher = updater.dispatcher
 job = updater.job_queue
 
