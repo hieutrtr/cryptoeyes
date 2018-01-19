@@ -74,7 +74,13 @@ def watcher(bot, job):
                             price_count+=1
                     price = float(price[:price_count])
                 if alert_limit < total:
-                    whale[value['Price']] = '*{} {}* at *{}*'.format('B' if otype == 'BUY' else 'S',total,value["TimeStamp"])
+                    moment = value["TimeStamp"].split(':')[0]
+                    whale_value = '*{}* at *{}*'.format(total,value["Price"])
+                    if whale.get(moment, None) is None:
+                        whale[moment] = {}
+                        whale[moment]['BUY'] = []
+                        whale[moment]['SELL'] = []
+                    whale[moment][otype].append(whale_value)
                 if otype == 'BUY':
                     # if price > maxkey:
                     #     maxkey = price
@@ -82,13 +88,13 @@ def watcher(bot, job):
                         result[price] = total
                         if back_day - 1 == 0:
                             message = ""
-                            for k,v in result.items():
-                                message += 'at *{}* have *{}*\n'.format(k,v)
+                            for k in sorted(result.iterkeys()):
+                                message += 'at *{}* have *{}*\n'.format(k,result[k])
                             bot.send_message(chat_id='423404239', text="*Watcher {}* new wall is building up at {}\n{}".format(market,price,message),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
                                 message = ""
-                                for k,v in whale.items():
-                                    message += 'at {} {}\n'.format(k,v)
+                                for k in sorted(whale.iterkeys()):
+                                    message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
                                 bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                     else:
                         result[price] = total + result.get(price)
@@ -107,9 +113,13 @@ def watcher(bot, job):
                                 message += 'at *{}* have *{}*\n'.format(k,v)
                             bot.send_message(chat_id='423404239', text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
-                                message = ""
-                                for k,v in whale.items():
-                                    message += 'at {} {}\n'.format(k,v)
+                                moment = value["TimeStamp"].split(':')[0]
+                                whale_value = '*{}* at *{}*'.format(total,value["Price"])
+                                if whale.get(moment, None) is None:
+                                    whale[moment] = {}
+                                    whale[moment]['BUY'] = []
+                                    whale[moment]['SELL'] = []
+                                whale[moment][otype].append(whale_value)
                                 bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                         while result.get(maxkey) is None:
                             if market[8:] == 'USDT-BTC':
@@ -133,8 +143,8 @@ def watcher(bot, job):
             bot.send_message(chat_id='423404239', text="*Watcher {}* :\n{} \n *last price {}*".format(market,message,last_price),parse_mode=ParseMode.MARKDOWN)
             if whale != {}:
                 message = ""
-                for k,v in whale.items():
-                    message += 'at {} {}\n'.format(k,v)
+                for k in sorted(whale.iterkeys()):
+                    message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
                 bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
         except Exception as e:
             print(e)
