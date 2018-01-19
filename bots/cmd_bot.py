@@ -98,8 +98,8 @@ def count_order(bot, update, args):
     bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* :\n{} \n *last price {}*".format(args[0],message,last_price),parse_mode=ParseMode.MARKDOWN)
     if whale != {}:
         message = ""
-        for k in sorted(result.iterkeys()):
-            message += '*{}* have\n{}\n'.format(k,'\n'.join(result[k]))
+        for k in sorted(whale.iterkeys()):
+            message += '*{}* have\n{}\n'.format(k,'\n'.join(whale[k]))
         bot.send_message(chat_id=update.message.chat_id, text="*{}'s* Whale info:\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_order_handler = CommandHandler('co', count_order, pass_args=True)
 dispatcher.add_handler(count_order_handler)
