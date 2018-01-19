@@ -1,6 +1,7 @@
 import json
 from telegram.ext import Updater,CommandHandler
-updater = Updater(token='481353725:AAFIPgZmgz1bv7C6NgDFeIf25ZSNPWU3XP0')
+my_chatid = os.environ['MY_CHATID']
+updater = Updater(token=os.environ['BOT_TOKEN'])
 job = updater.job_queue
 
 def update_price(bot, job):
@@ -17,7 +18,7 @@ def update_price(bot, job):
         if key in followcoin:
             prediction = json.dumps(value["prediction"])
             del value["prediction"]
-            bot.send_message(chat_id='423404239',text=key + ' : ' + json.dumps(value) + '\n' + prediction)
+            bot.send_message(chat_id=my_chatid,text=key + ' : ' + json.dumps(value) + '\n' + prediction)
 
 job.run_repeating(update_price, interval=300, first=0)
 job.start()

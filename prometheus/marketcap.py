@@ -20,7 +20,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 rose_host = os.environ['ROSE_HOST']
 prom_host = os.environ['PROM_HOST']
 tracking_limit = int(os.environ['TRACKING_LIMIT']) if os.environ['TRACKING_LIMIT'] is not None else 5
-updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
+my_chatid = os.environ['MY_CHATID']
+updater = Updater(token=os.environ['BOT_TOKEN'])
 job = updater.job_queue
 
 exchanges = ['marketcap']
@@ -120,11 +121,11 @@ def cap_alert(bot, job):
                     if bitres.get("success") == True:
                         if metric_val > 10 or metric_val < -10:
                             message = '*{} ({})* capacity (*{}*) is changed *{}* percent in 24 hours with volume *{}*\n'.format(coin_id,symbol,cap,metric_val,btc_volume)
-                            bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
+                            bot.send_message(chat_id=my_chatid,text=message,parse_mode=ParseMode.MARKDOWN)
                     # message = cap_check(volume,symbol,coin_id,metric_val)
                     # if message is not None:
                     #     print(message)
-                    #     bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
+                    #     bot.send_message(chat_id=my_chatid,text=message,parse_mode=ParseMode.MARKDOWN)
                     #     if coin_id == "bitcoin":
                     #         price_usd_mess = float(value.get("price_usd",0.0)) if value.get("price_usd",0.0) is not None else 0.0
                     #         message = price_check(coin_id,price_usd_mess)
@@ -133,7 +134,7 @@ def cap_alert(bot, job):
                     #         message = price_check(coin_id,price_btc_mess)
                     #     if message is not None:
                     #         print(message)
-                    #         bot.send_message(chat_id='423404239',text=message,parse_mode=ParseMode.MARKDOWN)
+                    #         bot.send_message(chat_id=my_chatid,text=message,parse_mode=ParseMode.MARKDOWN)
             gauge_metrics[col].labels(coin_id, value['name']).set(metric_val)
 
 job.run_repeating(cap_alert, interval=3600 * 24 * 60, first=0)

@@ -1,6 +1,7 @@
 import json
 from telegram.ext import Updater,CommandHandler
-updater = Updater(token='464648319:AAFO8SGTukV4LHYtzpmjhbybyrwt0QQwIp8')
+my_chatid = os.environ['MY_CHATID']
+updater = Updater(token=os.environ['BOT_TOKEN'])
 job = updater.job_queue
 
 def alert_price(bot, job):
@@ -28,7 +29,7 @@ def alert_price(bot, job):
         elif float(value["last"]) >= preDict['-0.618'] and float(value["last"]) <= preDict['-0.618']*1.1:
             message = key +  "'s price is back to -0.618 !!!\n Can we buy some, My Lord !!!"
         if message != "":
-            bot.send_message(chat_id='423404239',text=message)
+            bot.send_message(chat_id=my_chatid,text=message)
 
 job.run_repeating(alert_price, interval=1800, first=0)
 job.start()

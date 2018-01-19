@@ -6,6 +6,7 @@ from telegram.ext import Updater,CommandHandler
 from telegram import ParseMode
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
+my_chatid = os.environ['MY_CHATID']
 updater = Updater(token=os.environ['BOT_TOKEN'])
 dispatcher = updater.dispatcher
 

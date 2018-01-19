@@ -17,6 +17,7 @@ from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTE
 
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 rose_host = os.environ['ROSE_HOST']
+my_chatid = os.environ['MY_CHATID']
 updater = Updater(token=os.environ['BOT_TOKEN'])
 dispatcher = updater.dispatcher
 job = updater.job_queue
@@ -40,7 +41,7 @@ def watcher(bot, job):
     price_count = 0
     # for bd in range(int(back_day)-1,-1,-1)[:int(back_day)-1]:
     partition = datetime.datetime.fromtimestamp(int(time.time()) - ((back_day - 1) * 86400)).strftime('%Y-%m-%d')
-    bot.send_message(chat_id='423404239', text="*Watcher {}* collecting data from {}".format(market,partition),parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=my_chatid, text="*Watcher {}* collecting data from {}".format(market,partition),parse_mode=ParseMode.MARKDOWN)
     while True:
         whale = {}
         id_cache = []
@@ -90,12 +91,12 @@ def watcher(bot, job):
                             message = ""
                             for k in sorted(result.iterkeys()):
                                 message += 'at *{}* have *{}*\n'.format(k,result[k])
-                            bot.send_message(chat_id='423404239', text="*Watcher {}* new wall is building up at {}\n{}".format(market,price,message),parse_mode=ParseMode.MARKDOWN)
+                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* new wall is building up at {}\n{}".format(market,price,message),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
                                 message = ""
                                 for k in sorted(whale.iterkeys()):
                                     message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
-                                bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                                bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                     else:
                         result[price] = total + result.get(price)
                 else:
@@ -111,7 +112,7 @@ def watcher(bot, job):
                             message = ""
                             for k,v in result.items():
                                 message += 'at *{}* have *{}*\n'.format(k,v)
-                            bot.send_message(chat_id='423404239', text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
+                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
                                 moment = value["TimeStamp"].split(':')[0]
                                 whale_value = '*{}* at {}'.format(total,value["Price"])
@@ -120,7 +121,7 @@ def watcher(bot, job):
                                     whale[moment]['BUY'] = []
                                     whale[moment]['SELL'] = []
                                 whale[moment][otype].append(whale_value)
-                                bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                                bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                         while result.get(maxkey) is None:
                             if market[8:] == 'USDT-BTC':
                                 trykey = maxkey-stepkey*1000
@@ -140,13 +141,15 @@ def watcher(bot, job):
             message = ""
             for k,v in result.items():
                 message += 'at *{}* have *{}*\n'.format(k,v)
-            bot.send_message(chat_id='423404239', text="*Watcher {}* :\n{} \n *last price {}*".format(market,message,last_price),parse_mode=ParseMode.MARKDOWN)
+            bot.send_message(chat_id=my_chatid, text="*Watcher {}* :\n{} \n *last price {}*".format(market,message,last_price),parse_mode=ParseMode.MARKDOWN)
             if whale != {}:
                 message = ""
                 for k in sorted(whale.iterkeys()):
                     message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
-                bot.send_message(chat_id='423404239', text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
         except Exception as e:
             print(e)
 job.run_repeating(watcher, interval=3600*24*365, first=0)
 job.start()
+
+BOT_TOKEN=495644071:AAFNAdC6MNJWRoFqTGj4WU5tragMNPsGkd0 ROSE_HOST=10.146.0.2:9092 CRYPTOEYES_KEY=e65776a9c6b84d08aa668930609d14c2 CRYPTOEYES_SEC=374dfad955854242a8c1e166522c01d7 MARKET=bittrex.BTC-ETH BACK_DAY=9 ALERT_LIMIT=5 python workers/night_watcher.py
