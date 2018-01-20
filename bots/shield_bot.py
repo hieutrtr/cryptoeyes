@@ -25,7 +25,7 @@ def verify(chat_id):
     return chat_id == my_chatid
 
 def my_balance(bot, update, args):
-    if !verify(update.message.chat_id):
+    if verify(update.message.chat_id) is False:
         bot.send_message(chat_id=update.message.chat_id, text="*You're not my master!!*",parse_mode=ParseMode.MARKDOWN)
         bot.send_message(chat_id=my_chatid, text="*Someone call to your bot* id {}".format(update.message.chat_id),parse_mode=ParseMode.MARKDOWN)
         return
@@ -50,7 +50,7 @@ my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
 
 def my_trans(bot, update, args):
-    if !verify(update.message.chat_id):
+    if verify(update.message.chat_id) is False:
         bot.send_message(chat_id=update.message.chat_id, text="*You're not my master!!*",parse_mode=ParseMode.MARKDOWN)
         bot.send_message(chat_id=my_chatid, text="*Someone call to your bot* id {}".format(update.message.chat_id),parse_mode=ParseMode.MARKDOWN)
         return
@@ -71,7 +71,7 @@ sum_market_handler = CommandHandler('sum', sum_market, pass_args=True)
 dispatcher.add_handler(sum_market_handler)
 
 def protect_btc(bot, update, args):
-    if !verify(update.message.chat_id):
+    if verify(update.message.chat_id) is False:
         bot.send_message(chat_id=update.message.chat_id, text="*You're not my master!!*",parse_mode=ParseMode.MARKDOWN)
         bot.send_message(chat_id=my_chatid, text="*Someone call to your bot* id {}".format(update.message.chat_id),parse_mode=ParseMode.MARKDOWN)
         return
