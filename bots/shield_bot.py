@@ -62,7 +62,7 @@ my_trans_handler = CommandHandler('mt', my_trans, pass_args=True)
 dispatcher.add_handler(my_trans_handler)
 
 def sum_market(bot, update, args):
-    if !verify(update.message.chat_id):
+    if verify(update.message.chat_id) is False:
         bot.send_message(chat_id=update.message.chat_id, text="*You're not my master!!*",parse_mode=ParseMode.MARKDOWN)
         bot.send_message(chat_id=my_chatid, text="*Someone call to your bot* id {}".format(update.message.chat_id),parse_mode=ParseMode.MARKDOWN)
         return
