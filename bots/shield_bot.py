@@ -77,7 +77,7 @@ def protect_btc(bot, update, args):
         return
     quantity = float(args[0])
     rate = float(args[1])
-    otype = float(args[2])
+    otype = args[2]
     if otype == 's':
         result = bittrex.sell_limit("USDT-BTC",quantity,rate)
     elif otype == 'b':
