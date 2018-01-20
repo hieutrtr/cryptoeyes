@@ -207,7 +207,7 @@ dispatcher.add_handler(my_balance_handler)
 def my_trans(bot, update, args):
     message = ""
     for res in bittrex.get_order_history()["result"][:5]:
-        message += "{}\n".format(result)
+        message += "{}\n".format(res)
     bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
 my_trans_handler = CommandHandler('mt', my_trans, pass_args=True)
 dispatcher.add_handler(my_trans_handler)
