@@ -140,8 +140,8 @@ def count_no_sell_order(bot, update, args):
             if otype == 'BUY':
                 result[price] = total if result.get(price) is None else total + result.get(price)
     message = ""
-    for k,v in result.items():
-        message += 'at *{}* have *{}*\n'.format(k,v)
+    for k in sorted(result.iterkeys()):
+        message += 'at *{}* have *{}*\n'.format(k,result[k])
     bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* (BUY):\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_order_no_sell_handler = CommandHandler('cons', count_no_sell_order, pass_args=True)
 dispatcher.add_handler(count_order_no_sell_handler)
@@ -177,8 +177,8 @@ def count_sell_order(bot, update, args):
             if otype == 'SELL':
                 result[price] = total if result.get(price) is None else total + result.get(price)
     message = ""
-    for k,v in result.items():
-        message += 'at *{}* have *{}*\n'.format(k,v)
+    for k in sorted(result.iterkeys()):
+        message += 'at *{}* have *{}*\n'.format(k,result[k])
     bot.send_message(chat_id=update.message.chat_id, text="Your coin *{}'s* (SELL):\n{}".format(args[0],message),parse_mode=ParseMode.MARKDOWN)
 count_sell_order_handler = CommandHandler('cos', count_sell_order, pass_args=True)
 dispatcher.add_handler(count_sell_order_handler)

@@ -30,7 +30,7 @@ def find_biggest_key(mydict):
     return bg
 
 def watcher(bot, job):
-    alert_limit = os.environ['ALERT_LIMIT']
+    alert_limit = int(os.environ['ALERT_LIMIT'])
     market = os.environ['MARKET']
     back_day = int(os.environ['BACK_DAY'])
     result = {}
@@ -83,8 +83,6 @@ def watcher(bot, job):
                         whale[moment]['SELL'] = []
                     whale[moment][otype].append(whale_value)
                 if otype == 'BUY':
-                    # if price > maxkey:
-                    #     maxkey = price
                     if result.get(price) is None:
                         result[price] = total
                         if back_day - 1 == 0:
@@ -110,8 +108,8 @@ def watcher(bot, job):
                         del result[maxkey]
                         if back_day - 1 == 0:
                             message = ""
-                            for k,v in result.items():
-                                message += 'at *{}* have *{}*\n'.format(k,v)
+                            for k in sorted(result.iterkeys()):
+                                message += 'at *{}* have *{}*\n'.format(k,result[k])
                             bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
                                 moment = value["TimeStamp"].split(':')[0]
@@ -139,8 +137,8 @@ def watcher(bot, job):
                 print(e)
         try:
             message = ""
-            for k,v in result.items():
-                message += 'at *{}* have *{}*\n'.format(k,v)
+            for k in sorted(result.iterkeys()):
+                message += 'at *{}* have *{}*\n'.format(k,result[k])
             bot.send_message(chat_id=my_chatid, text="*Watcher {}* :\n{} \n *last price {}*".format(market,message,last_price),parse_mode=ParseMode.MARKDOWN)
             if whale != {}:
                 message = ""
