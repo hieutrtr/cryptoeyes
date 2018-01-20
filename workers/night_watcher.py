@@ -112,13 +112,9 @@ def watcher(bot, job):
                                 message += 'at *{}* have *{}*\n'.format(k,result[k])
                             bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
-                                moment = value["TimeStamp"].split(':')[0]
-                                whale_value = '*{}* at {}'.format(total,value["Price"])
-                                if whale.get(moment, None) is None:
-                                    whale[moment] = {}
-                                    whale[moment]['BUY'] = []
-                                    whale[moment]['SELL'] = []
-                                whale[moment][otype].append(whale_value)
+                                message = ""
+                                for k in sorted(whale.iterkeys()):
+                                    message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
                                 bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                         while result.get(maxkey) is None:
                             if market[8:] == 'USDT-BTC':
