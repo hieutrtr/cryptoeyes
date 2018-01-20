@@ -204,6 +204,12 @@ def my_balance(bot, update, args):
 my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
 
+def my_trans(bot, update, args):
+    message = "{}".format(bittrex.get_order_history()["result"])
+    bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
+my_trans_handler = CommandHandler('mt', my_trans, pass_args=True)
+dispatcher.add_handler(my_trans_handler)
+
 def sum_market(bot, update, args):
     bot.send_message(chat_id=update.message.chat_id, text='{}'.format(bittrex.get_marketsummary(args[0])),parse_mode=ParseMode.MARKDOWN)
 sum_market_handler = CommandHandler('sum', sum_market, pass_args=True)
