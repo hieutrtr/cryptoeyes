@@ -54,8 +54,9 @@ def my_trans(bot, update, args):
         bot.send_message(chat_id=update.message.chat_id, text="*You're not my master!!*",parse_mode=ParseMode.MARKDOWN)
         bot.send_message(chat_id=my_chatid, text="*Someone call to your bot* id {}".format(update.message.chat_id),parse_mode=ParseMode.MARKDOWN)
         return
+    lim = int(args[0])
     message = ""
-    for res in bittrex.get_order_history()["result"][:10]:
+    for res in bittrex.get_order_history()["result"][:lim]:
         message += "*{}* {} {} at {} \n".format(res["Exchange"],res["OrderType"].replace("_"," "),res["Quantity"],res["PricePerUnit"])
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 my_trans_handler = CommandHandler('mt', my_trans, pass_args=True)

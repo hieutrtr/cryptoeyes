@@ -205,8 +205,9 @@ my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
 
 def my_trans(bot, update, args):
+    lim = int(args[0])
     message = ""
-    for res in bittrex.get_order_history()["result"][:10]:
+    for res in bittrex.get_order_history()["result"][:lim]:
         message += "*{}* {} {} at {} \n".format(res["Exchange"],res["OrderType"].replace("_"," "),res["Quantity"],res["PricePerUnit"])
     bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
 my_trans_handler = CommandHandler('mt', my_trans, pass_args=True)
