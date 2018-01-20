@@ -56,7 +56,7 @@ def my_open_order(bot, update, args):
         return
     message = ""
     for res in bittrex.get_open_orders()["result"]:
-        message += "*{}* {} {} when {} \n".format(res["Exchange"],res["OrderType"].replace("_"," "),res["Quantity"],res["ConditionTarget"])
+        message += "*{}* {} {} at {} when {} \n".format(res["Exchange"],res["OrderType"].replace("_"," "),res["Quantity"],res["Limit"],res["ConditionTarget"])
     bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
 my_open_order_handler = CommandHandler('od', my_open_order, pass_args=True)
 dispatcher.add_handler(my_open_order_handler)
