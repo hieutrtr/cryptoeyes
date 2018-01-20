@@ -77,7 +77,11 @@ def protect_btc(bot, update, args):
         return
     quantity = float(args[0])
     rate = float(args[1])
-    result = bittrex.sell_limit("USDT-BTC",quantity,rate)
+    otype = float(args[2])
+    if otype == 's':
+        result = bittrex.sell_limit("USDT-BTC",quantity,rate)
+    elif otype == 'b':
+        result = bittrex.buy_limit("USDT-BTC",quantity,rate)
     message = "{}".format(result)
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 protect_btc_handler = CommandHandler('pbtc', protect_btc, pass_args=True)
