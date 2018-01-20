@@ -213,6 +213,14 @@ def my_trans(bot, update, args):
 my_trans_handler = CommandHandler('mt', my_trans, pass_args=True)
 dispatcher.add_handler(my_trans_handler)
 
+def my_open_order(bot, update, args):
+    message = ""
+    for res in bittrex.get_open_orders()["result"]:
+        message += "*{}* {} {} at {} \n".format(res["Exchange"],res["OrderType"].replace("_"," "),res["Quantity"],res["PricePerUnit"])
+    bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
+my_open_order_handler = CommandHandler('od', my_open_order, pass_args=True)
+dispatcher.add_handler(my_open_order_handler)
+
 def sum_market(bot, update, args):
     bot.send_message(chat_id=update.message.chat_id, text='{}'.format(bittrex.get_marketsummary(args[0])),parse_mode=ParseMode.MARKDOWN)
 sum_market_handler = CommandHandler('sum', sum_market, pass_args=True)
