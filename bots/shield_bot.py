@@ -22,7 +22,7 @@ from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTE
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 
 def verify(chat_id):
-    return chat_id == my_chatid
+    return str(chat_id) == my_chatid
 
 def my_balance(bot, update, args):
     if verify(update.message.chat_id) is False:
