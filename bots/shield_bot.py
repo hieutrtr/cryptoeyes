@@ -99,12 +99,12 @@ def protect_btc(bot, update, args):
         elif otype == 'b':
             result = bittrex.buy_limit("USDT-BTC",quantity,rate)
     else:
-        target = args[3]
+        target = float(args[3])
         if otype == 's':
-            result = bittrexv2.trade_sell(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='LESS_THAN')
+            result = bittrexv2.trade_sell(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='LESS_THAN',time_in_effect='GOOD_TIL_CANCELLED')
         elif otype == 'b':
-            result = bittrexv2.trade_buy(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='GREATER_THAN')
-    message = "{}".format(result['result']['uuid'])
+            result = bittrexv2.trade_buy(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='GREATER_THAN',time_in_effect='GOOD_TIL_CANCELLED')
+    message = "{}".format(result)
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 protect_btc_handler = CommandHandler('pbtc', protect_btc, pass_args=True)
 dispatcher.add_handler(protect_btc_handler)
