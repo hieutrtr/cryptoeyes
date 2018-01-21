@@ -93,18 +93,21 @@ def protect_btc(bot, update, args):
     rate = float(args[1])
     otype = args[2]
     result = "N/A"
+    order_id = 0
     if len(args) < 4:
         if otype == 's':
             result = bittrex.sell_limit("USDT-BTC",quantity,rate)
         elif otype == 'b':
             result = bittrex.buy_limit("USDT-BTC",quantity,rate)
+        order_id = result['result']['uuid']
     else:
         target = float(args[3])
         if otype == 's':
-            result = bittrexv2.trade_sell(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='LESS_THAN',time_in_effect='GOOD_TIL_CANCELLED')
+            result = bittrexv2.trade_sell(market="USDT-BTC",order_type='LIMIT',quantity=quantity,rate=rate,target=target,condition_type='LESS_THAN',time_in_effect='GOOD_TIL_CANCELLED')
         elif otype == 'b':
-            result = bittrexv2.trade_buy(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='GREATER_THAN',time_in_effect='GOOD_TIL_CANCELLED')
-    message = "{}".format(result)
+            result = bittrexv2.trade_buy(market="USDT-BTC",order_type='LIMIT',quantity=quantity,rate=rate,target=target,condition_type='GREATER_THAN',time_in_effect='GOOD_TIL_CANCELLED')
+        order_id = result['result']['OrderId']
+    message = "{}".format(order_id)
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 protect_btc_handler = CommandHandler('pbtc', protect_btc, pass_args=True)
 dispatcher.add_handler(protect_btc_handler)
@@ -118,11 +121,22 @@ def protect(bot, update, args):
     rate = float(args[1])
     otype = args[2]
     coin = args[3]
-    if otype == 's':
-        result = bittrex.sell_limit(coin,quantity,rate)
-    elif otype == 'b':
-        result = bittrex.buy_limit(coin,quantity,rate)
-    message = "{}".format(result['result']['uuid'])
+    result = "N/A"
+    order_id = 0
+    if len(args) < 5:
+        if otype == 's':
+            result = bittrex.sell_limit(coin,quantity,rate)
+        elif otype == 'b':
+            result = bittrex.buy_limit(coin,quantity,rate)
+        order_id = result['result']['uuid']
+    else:
+        target = float(args[4])
+        if otype == 's':
+            result = bittrexv2.trade_sell(market=coin,order_type='LIMIT',quantity=quantity,rate=rate,target=target,condition_type='LESS_THAN',time_in_effect='GOOD_TIL_CANCELLED')
+        elif otype == 'b':
+            result = bittrexv2.trade_buy(market=coin,order_type='LIMIT',quantity=quantity,rate=rate,target=target,condition_type='GREATER_THAN',time_in_effect='GOOD_TIL_CANCELLED')
+        order_id = result['result']['OrderId']
+    message = "{}".format(order_id)
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 protect_handler = CommandHandler('p', protect, pass_args=True)
 dispatcher.add_handler(protect_handler)
