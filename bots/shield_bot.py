@@ -20,6 +20,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path+'/..')
 from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
 
 def verify(chat_id):
     return str(chat_id) == my_chatid
@@ -100,9 +101,9 @@ def protect_btc(bot, update, args):
     else:
         target = args[3]
         if otype == 's':
-            result = bittrex.trade_sell(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='LESS_THAN')
+            result = bittrexv2.trade_sell(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='LESS_THAN')
         elif otype == 'b':
-            result = bittrex.trade_buy(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='GREATER_THAN')
+            result = bittrexv2.trade_buy(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='GREATER_THAN')
     message = "{}".format(result['result']['uuid'])
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 protect_btc_handler = CommandHandler('pbtc', protect_btc, pass_args=True)
