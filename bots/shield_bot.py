@@ -100,6 +100,36 @@ def protect_btc(bot, update, args):
 protect_btc_handler = CommandHandler('pbtc', protect_btc, pass_args=True)
 dispatcher.add_handler(protect_btc_handler)
 
+def protect(bot, update, args):
+    if verify(update.message.chat_id) is False:
+        bot.send_message(chat_id=update.message.chat_id, text="*You're not my master!!*",parse_mode=ParseMode.MARKDOWN)
+        bot.send_message(chat_id=my_chatid, text="*Someone call to your bot* id {}".format(update.message.chat_id),parse_mode=ParseMode.MARKDOWN)
+        return
+    quantity = float(args[0])
+    rate = float(args[1])
+    otype = args[2]
+    coin = args[3]
+    if otype == 's':
+        result = bittrex.sell_limit(coin,quantity,rate)
+    elif otype == 'b':
+        result = bittrex.buy_limit(coin,quantity,rate)
+    message = "{}".format(result)
+    bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
+protect_handler = CommandHandler('p', protect, pass_args=True)
+dispatcher.add_handler(protect_handler)
+
+def cancel(bot, update, args):
+    if verify(update.message.chat_id) is False:
+        bot.send_message(chat_id=update.message.chat_id, text="*You're not my master!!*",parse_mode=ParseMode.MARKDOWN)
+        bot.send_message(chat_id=my_chatid, text="*Someone call to your bot* id {}".format(update.message.chat_id),parse_mode=ParseMode.MARKDOWN)
+        return
+    uuid = args[0]
+    result = bittrex.cancel(uuid)
+    message = "{}".format(result)
+    bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
+cancel_handler = CommandHandler('c', cancel, pass_args=True)
+dispatcher.add_handler(cancel_handler)
+
 def error_callback(bot, update, error):
     raise error
 dispatcher.add_error_handler(error_callback)
