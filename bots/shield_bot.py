@@ -91,10 +91,18 @@ def protect_btc(bot, update, args):
     quantity = float(args[0])
     rate = float(args[1])
     otype = args[2]
-    if otype == 's':
-        result = bittrex.sell_limit("USDT-BTC",quantity,rate)
-    elif otype == 'b':
-        result = bittrex.buy_limit("USDT-BTC",quantity,rate)
+    result = "N/A"
+    if len(args) < 4:
+        if otype == 's':
+            result = bittrex.sell_limit("USDT-BTC",quantity,rate)
+        elif otype == 'b':
+            result = bittrex.buy_limit("USDT-BTC",quantity,rate)
+    else:
+        target = args[3]
+        if otype == 's':
+            result = bittrex.trade_sell(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='LESS_THAN')
+        elif otype == 'b':
+            result = bittrex.trade_buy(market="USDT-BTC",order_type='MARKET',quantity=quantity,target=target,condition_type='GREATER_THAN')
     message = "{}".format(result['result']['uuid'])
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 protect_btc_handler = CommandHandler('pbtc', protect_btc, pass_args=True)
