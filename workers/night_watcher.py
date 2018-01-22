@@ -29,8 +29,21 @@ def find_biggest_key(mydict):
             bg = k
     return bg
 
+# def send_message(bot,result,whale):
+#     if back_day - 1 == 0:
+#         message = ""
+#         for k in sorted(result.iterkeys()):
+#             message += 'at *{}* have *{}*\n'.format(k,result[k])
+#         bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
+#         if whale != {}:
+#             message = ""
+#             for k in sorted(whale.iterkeys()):
+#                 message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
+#             bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+
 def watcher(bot, job):
     alert_limit = int(os.environ['ALERT_LIMIT'])
+    level_range = int(os.environ['LEVEL_RANGE'])
     market = os.environ['MARKET']
     back_day = int(os.environ['BACK_DAY'])
     result = {}
@@ -39,6 +52,8 @@ def watcher(bot, job):
     last_price = bittrex.get_marketsummary(market[8:])["result"][0]["Last"]
     wall_price = 10 # btc
     price_count = 0
+    level = 0
+    sum_total = 0.0
     # for bd in range(int(back_day)-1,-1,-1)[:int(back_day)-1]:
     partition = datetime.datetime.fromtimestamp(int(time.time()) - ((back_day - 1) * 86400)).strftime('%Y-%m-%d')
     bot.send_message(chat_id=my_chatid, text="*Watcher {}* collecting data from {}".format(market,partition),parse_mode=ParseMode.MARKDOWN)
@@ -83,6 +98,7 @@ def watcher(bot, job):
                         whale[moment]['SELL'] = []
                     whale[moment][otype].append(whale_value)
                 if otype == 'BUY':
+                    sum_total += total
                     if result.get(price) is None:
                         result[price] = total
                         if back_day - 1 == 0:
@@ -98,6 +114,7 @@ def watcher(bot, job):
                     else:
                         result[price] = total + result.get(price)
                 else:
+                    sum_total -= total
                     maxkey = find_biggest_key(result)
                     if maxkey == 0 or total == 0:
                         continue
@@ -129,6 +146,28 @@ def watcher(bot, job):
                             break
                     if result.get(maxkey) is not None:
                         result[maxkey] = result[maxkey] - total
+                if back_day - 1 == 0:
+                    if (int(sum_total) / level_range) > level:
+                        message = ""
+                        for k in sorted(result.iterkeys()):
+                            message += 'at *{}* have *{}*\n'.format(k,result[k])
+                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *up* of {}\n{}".format(market,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                        if whale != {}:
+                            message = ""
+                            for k in sorted(whale.iterkeys()):
+                                message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
+                            bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                    elif (int(sum_total) / level_range) < level:
+                        message = ""
+                        for k in sorted(result.iterkeys()):
+                            message += 'at *{}* have *{}*\n'.format(k,result[k])
+                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *down* of {}\n{}".format(market,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                        if whale != {}:
+                            message = ""
+                            for k in sorted(whale.iterkeys()):
+                                message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
+                            bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                level = int(sum_total) / level_range
             except Exception as e:
                 print(e)
         try:
