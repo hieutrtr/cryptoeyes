@@ -228,11 +228,11 @@ def cost_pumpdump(bot, update, args):
     price = 0.0
     message = ""
     for res in bittrex.get_orderbook(market,otype)["result"]:
-        asset = asset - res["Quantity"]
+        asset = asset - (res["Quantity"] * res["Rate"])
         if asset <= 0.0:
             price = res["Rate"]
             break;
-    message = "*{}* {} to {} with {}\n".format(market,otype,price,asset)
+    message = "*{}* {} to {} with {}\n".format(market,otype,price,args[2])
     bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
 cost_pumpdump_handler = CommandHandler('cpd', cost_pumpdump, pass_args=True)
 dispatcher.add_handler(cost_pumpdump_handler)
