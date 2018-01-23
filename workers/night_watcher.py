@@ -54,6 +54,7 @@ def watcher(bot, job):
     price_count = 0
     level = 0
     sum_total = 0.0
+    prev_sum_total = 0.0
     # for bd in range(int(back_day)-1,-1,-1)[:int(back_day)-1]:
     partition = datetime.datetime.fromtimestamp(int(time.time()) - ((back_day - 1) * 86400)).strftime('%Y-%m-%d')
     bot.send_message(chat_id=my_chatid, text="*Watcher {}* collecting data from {}".format(market,partition),parse_mode=ParseMode.MARKDOWN)
@@ -102,15 +103,18 @@ def watcher(bot, job):
                     if result.get(price) is None:
                         result[price] = total
                         if back_day - 1 == 0:
-                            message = ""
-                            for k in sorted(result.iterkeys()):
-                                message += 'at *{}* have *{}*\n'.format(k,result[k])
-                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* new wall is building up at {}\n{}".format(market,price,message),parse_mode=ParseMode.MARKDOWN)
-                            if whale != {}:
+                            sum_total_change = sum_total - prev_sum_total
+                            sum_total_change *= -1 if sum_total_change < 0 else 1
+                            if sum_total_change > level_range/10:
                                 message = ""
-                                for k in sorted(whale.iterkeys()):
-                                    message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
-                                bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                                for k in sorted(result.iterkeys()):
+                                    message += 'at *{}* have *{}*\n'.format(k,result[k])
+                                bot.send_message(chat_id=my_chatid, text="*Watcher {}* new wall is building up at {}\n{}".format(market,price,message),parse_mode=ParseMode.MARKDOWN)
+                                if whale != {}:
+                                    message = ""
+                                    for k in sorted(whale.iterkeys()):
+                                        message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
+                                    bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                     else:
                         result[price] = total + result.get(price)
                 else:
@@ -124,15 +128,18 @@ def watcher(bot, job):
                         total = total - result[maxkey]
                         del result[maxkey]
                         if back_day - 1 == 0:
-                            message = ""
-                            for k in sorted(result.iterkeys()):
-                                message += 'at *{}* have *{}*\n'.format(k,result[k])
-                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
-                            if whale != {}:
+                            sum_total_change = sum_total - prev_sum_total
+                            sum_total_change *= -1 if sum_total_change < 0 else 1
+                            if sum_total_change > level_range/10:
                                 message = ""
-                                for k in sorted(whale.iterkeys()):
-                                    message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
-                                bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                                for k in sorted(result.iterkeys()):
+                                    message += 'at *{}* have *{}*\n'.format(k,result[k])
+                                bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall at {} was broken\n{}".format(market,maxkey,message),parse_mode=ParseMode.MARKDOWN)
+                                if whale != {}:
+                                    message = ""
+                                    for k in sorted(whale.iterkeys()):
+                                        message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
+                                    bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                         while result.get(maxkey) is None:
                             if market[8:] == 'USDT-BTC':
                                 trykey = maxkey-stepkey*1000
@@ -146,29 +153,33 @@ def watcher(bot, job):
                             break
                     if result.get(maxkey) is not None:
                         result[maxkey] = result[maxkey] - total
+                new_level = int(sum_total) / level_range
                 if back_day - 1 == 0:
-                    new_level = int(sum_total) / level_range
-                    if (new_level > level:
-                        message = ""
-                        for k in sorted(result.iterkeys()):
-                            message += 'at *{}* have *{}*\n'.format(k,result[k])
-                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *up* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
-                        if whale != {}:
+                    sum_total_change = sum_total - prev_sum_total
+                    sum_total_change *= -1 if sum_total_change < 0 else 1
+                    if sum_total_change > level_range/10:
+                        if new_level > level:
                             message = ""
-                            for k in sorted(whale.iterkeys()):
-                                message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
-                            bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
-                    elif (new_level < level:
-                        message = ""
-                        for k in sorted(result.iterkeys()):
-                            message += 'at *{}* have *{}*\n'.format(k,result[k])
-                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *down* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
-                        if whale != {}:
+                            for k in sorted(result.iterkeys()):
+                                message += 'at *{}* have *{}*\n'.format(k,result[k])
+                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *up* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                            if whale != {}:
+                                message = ""
+                                for k in sorted(whale.iterkeys()):
+                                    message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
+                                bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                        elif new_level < level:
                             message = ""
-                            for k in sorted(whale.iterkeys()):
-                                message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
-                            bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
-                level = int(sum_total) / level_range
+                            for k in sorted(result.iterkeys()):
+                                message += 'at *{}* have *{}*\n'.format(k,result[k])
+                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *down* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                            if whale != {}:
+                                message = ""
+                                for k in sorted(whale.iterkeys()):
+                                    message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
+                                bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
+                level = new_level
+                sum_total_change = sum_total
             except Exception as e:
                 print(e)
         try:
