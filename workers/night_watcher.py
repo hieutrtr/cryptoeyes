@@ -147,21 +147,22 @@ def watcher(bot, job):
                     if result.get(maxkey) is not None:
                         result[maxkey] = result[maxkey] - total
                 if back_day - 1 == 0:
-                    if (int(sum_total) / level_range) > level:
+                    new_level = int(sum_total) / level_range
+                    if (new_level > level:
                         message = ""
                         for k in sorted(result.iterkeys()):
                             message += 'at *{}* have *{}*\n'.format(k,result[k])
-                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *up* {} of {}\n{}".format(market,level,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *up* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
                         if whale != {}:
                             message = ""
                             for k in sorted(whale.iterkeys()):
                                 message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
                             bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
-                    elif (int(sum_total) / level_range) < level:
+                    elif (new_level < level:
                         message = ""
                         for k in sorted(result.iterkeys()):
                             message += 'at *{}* have *{}*\n'.format(k,result[k])
-                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *down* {} of {}\n{}".format(market,level,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                        bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *down* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
                         if whale != {}:
                             message = ""
                             for k in sorted(whale.iterkeys()):
