@@ -131,6 +131,7 @@ def watcher(bot, job):
                             sum_total_change = sum_total - prev_sum_total
                             sum_total_change *= -1 if sum_total_change < 0 else 1
                             if sum_total_change > level_range/5:
+                                sum_total_change = sum_total
                                 message = ""
                                 for k in sorted(result.iterkeys()):
                                     message += 'at *{}* have *{}*\n'.format(k,result[k])
@@ -157,7 +158,8 @@ def watcher(bot, job):
                 if back_day - 1 == 0:
                     sum_total_change = sum_total - prev_sum_total
                     sum_total_change *= -1 if sum_total_change < 0 else 1
-                    if sum_total_change > level_range/10:
+                    if sum_total_change > level_range/5:
+                        sum_total_change = sum_total
                         if new_level > level:
                             message = ""
                             for k in sorted(result.iterkeys()):
@@ -179,7 +181,6 @@ def watcher(bot, job):
                                     message += '*{}* have\nBUY: {}\nSELL: {}\n'.format(k,', '.join(whale[k]['BUY']),', '.join(whale[k]['SELL']))
                                 bot.send_message(chat_id=my_chatid, text="*{}'s* Whale info:\n{}".format(market,message),parse_mode=ParseMode.MARKDOWN)
                 level = new_level
-                sum_total_change = sum_total
             except Exception as e:
                 print(e)
         try:
