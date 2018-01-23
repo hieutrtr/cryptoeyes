@@ -221,6 +221,22 @@ def my_open_order(bot, update, args):
 my_open_order_handler = CommandHandler('od', my_open_order, pass_args=True)
 dispatcher.add_handler(my_open_order_handler)
 
+def cost_pumpdump(bot, update, args):
+    market = args[0]
+    otype = "buy" if args[1] == "dump" else "sell"
+    asset = float(args[2])
+    price = 0.0
+    message = ""
+    for res in bittrex.get_orderbook(market,otype)["result"]:
+        asset = asset - res["Quantity"]
+        if asset <= 0.0:
+            price = res["Rate"]
+            break;
+    message = "*{}* {} to {} with {}\n".format(market,otype,price,asset)
+    bot.send_message(chat_id=update.message.chat_id, text=message,parse_mode=ParseMode.MARKDOWN)
+cost_pumpdump_handler = CommandHandler('cpd', cost_pumpdump, pass_args=True)
+dispatcher.add_handler(cost_pumpdump_handler)
+
 def sum_market(bot, update, args):
     bot.send_message(chat_id=update.message.chat_id, text='{}'.format(bittrex.get_marketsummary(args[0])),parse_mode=ParseMode.MARKDOWN)
 sum_market_handler = CommandHandler('sum', sum_market, pass_args=True)
