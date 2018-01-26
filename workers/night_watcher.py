@@ -162,7 +162,8 @@ def watcher(bot, job):
                             message = ""
                             for k in sorted(result.iterkeys()):
                                 message += 'at *{}* have *{}*\n'.format(k,result[k])
-                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *up* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                            last_price = bittrex.get_marketsummary(market[8:])["result"][0]["Last"]
+                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *up* {} of {}\n{}\nLast price: {}".format(market,new_level,level_range,message,last_price),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
                                 message = ""
                                 for k in sorted(whale.iterkeys()):
@@ -172,7 +173,8 @@ def watcher(bot, job):
                             message = ""
                             for k in sorted(result.iterkeys()):
                                 message += 'at *{}* have *{}*\n'.format(k,result[k])
-                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *down* {} of {}\n{}".format(market,new_level,level_range,message),parse_mode=ParseMode.MARKDOWN)
+                            last_price = bittrex.get_marketsummary(market[8:])["result"][0]["Last"]
+                            bot.send_message(chat_id=my_chatid, text="*Watcher {}* the wall level *down* {} of {}\n{}\nLast price: {}".format(market,new_level,level_range,message,last_price),parse_mode=ParseMode.MARKDOWN)
                             if whale != {}:
                                 message = ""
                                 for k in sorted(whale.iterkeys()):
