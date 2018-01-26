@@ -131,7 +131,7 @@ def watcher(bot, job):
                             sum_total_change = sum_total - prev_sum_total
                             sum_total_change *= -1 if sum_total_change < 0 else 1
                             if sum_total_change > level_range/5:
-                                sum_total_change = sum_total
+                                prev_sum_total = sum_total
                                 message = ""
                                 for k in sorted(result.iterkeys()):
                                     message += 'at *{}* have *{}*\n'.format(k,result[k])
@@ -159,7 +159,7 @@ def watcher(bot, job):
                     sum_total_change = sum_total - prev_sum_total
                     sum_total_change *= -1 if sum_total_change < 0 else 1
                     if sum_total_change > level_range/5:
-                        sum_total_change = sum_total
+                        prev_sum_total = sum_total
                         if new_level > level:
                             message = ""
                             for k in sorted(result.iterkeys()):
