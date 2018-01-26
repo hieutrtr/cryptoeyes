@@ -24,7 +24,8 @@ job = updater.job_queue
 def send_message(bot,market,walls,otype):
     last_price = bittrex.get_marketsummary(market)["result"][0]["Last"]
     message = "*{} wall - {}*\n".format(otype,market)
-    message += "\n".join(["at *{}* have *{}*".format(k,v) for k,v in walls.items()])
+    for k in sorted(walls.iterkeys()):
+        message += 'at *{}* have *{}*\n'.format(k,walls[k])
     message += "\nLast price:{}".format(last_price)
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
