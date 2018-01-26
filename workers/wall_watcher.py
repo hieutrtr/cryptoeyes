@@ -43,10 +43,9 @@ def flatPrice(market,price):
 
 def watcher(bot, job):
     markets = os.environ['MARKETS'].split(",")
-    message = ""
-    buy_walls = {}
-    sell_walls = {}
     for market in markets:
+        buy_walls = {}
+        sell_walls = {}
         for res in bittrex.get_orderbook(market,"buy")["result"]:
             price = flatPrice(market,res["Rate"])
             Quantity = (res["Quantity"] * res["Rate"])
