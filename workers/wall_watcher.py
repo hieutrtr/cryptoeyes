@@ -26,18 +26,33 @@ def send_message(bot,market,walls,otype):
     message += "\n".join(["at *{}* have *{}*".format(k,v) for k,v in walls.items()])
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
+def flatPrice(market,price):
+    price_count = 0
+    if market == 'USDT-BTC':
+        price = (int(price)/1000)*1000
+    else:
+        price = '{0:.10f}'.format(price)
+        if price_count == 0:
+            for p in price[2:]:
+                if p != '0':
+                    price_count+=4
+                    break
+                price_count+=1
+        price = float(price[:price_count])
+    return price
+
 def watcher(bot, job):
     markets = os.environ['MARKETS'].split(",")
-    asset = float(args[2])
-    price = 0.0
     message = ""
+    buy_walls = {}
+    sell_walls = {}
     for market in markets:
         for res in bittrex.get_orderbook(market,"buy")["result"]:
-            price = flatPrice(res["Rate"])
+            price = flatPrice(market,res["Rate"])
             buy_walls[price] = res["Quantity"] if matrix.get(price) is None else matrix[price] + res["Quantity"]
         send_message(bot,market,buy_walls,"buy")
         for res in bittrex.get_orderbook(market,"sell")["result"]:
-            price = flatPrice(res["Rate"])
+            price = flatPrice(market,res["Rate"])
             sell_walls[price] = res["Quantity"] if matrix.get(price) is None else matrix[price] + res["Quantity"]
         send_message(bot,market,sell_walls,"sell")
 
