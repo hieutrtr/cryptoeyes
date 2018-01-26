@@ -49,11 +49,13 @@ def watcher(bot, job):
     for market in markets:
         for res in bittrex.get_orderbook(market,"buy")["result"]:
             price = flatPrice(market,res["Rate"])
-            buy_walls[price] = res["Quantity"] if buy_walls.get(price) is None else buy_walls[price] + res["Quantity"]
+            Quantity = (res["Quantity"] * res["Rate"])
+            buy_walls[price] = Quantity if buy_walls.get(price) is None else buy_walls[price] + Quantity
         send_message(bot,market,buy_walls,"buy")
         for res in bittrex.get_orderbook(market,"sell")["result"]:
             price = flatPrice(market,res["Rate"])
-            sell_walls[price] = res["Quantity"] if sell_walls.get(price) is None else sell_walls[price] + res["Quantity"]
+            Quantity = (res["Quantity"] * res["Rate"])
+            sell_walls[price] = Quantity if sell_walls.get(price) is None else sell_walls[price] + Quantity
         send_message(bot,market,sell_walls,"sell")
 
 job.run_repeating(watcher, interval=120, first=0)
