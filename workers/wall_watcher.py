@@ -31,13 +31,13 @@ def send_message(bot,market,walls,otype):
 def flatPrice(market,price):
     price_count = 0
     if market == 'USDT-BTC':
-        price = (int(price)/1000)*1000
+        price = (int(price)/100)*100
     else:
         price = '{0:.10f}'.format(price)
         if price_count == 0:
             for p in price[2:]:
                 if p != '0':
-                    price_count+=4
+                    price_count+=6
                     break
                 price_count+=1
         price = float(price[:price_count])
