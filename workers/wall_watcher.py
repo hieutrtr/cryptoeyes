@@ -29,7 +29,7 @@ def send_message(bot,market,walls,otype):
     last_price = bittrex.get_marketsummary(market)["result"][0]["Last"]
     message = "*{} wall - {}*\n".format(otype,market)
     for k in sorted(walls.iterkeys()):
-        if walls_cache[otype][k] > walls[k] + alert_limit:
+        if not walls_cache[otype] or (walls_cache[otype][k] > walls[k] + alert_limit):
             be_send = True
         if walls[k] > alert_limit:
             message += 'at *{}* have *{}*\n'.format(k,walls[k])
