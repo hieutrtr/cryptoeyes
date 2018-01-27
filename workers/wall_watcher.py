@@ -18,16 +18,24 @@ from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTE
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 my_chatid = os.environ['MY_CHATID']
 updater = Updater(token=os.environ['BOT_TOKEN'])
+alert_limit = int(os.environ['ALERT_LIMIT'])
 dispatcher = updater.dispatcher
 job = updater.job_queue
 
+walls_cache = {"buy":{},"sell":{}}
+
 def send_message(bot,market,walls,otype):
+    be_send = False
     last_price = bittrex.get_marketsummary(market)["result"][0]["Last"]
     message = "*{} wall - {}*\n".format(otype,market)
     for k in sorted(walls.iterkeys()):
-        message += 'at *{}* have *{}*\n'.format(k,walls[k])
+        if walls_cache[otype][k] > walls[k] + alert_limit:
+            be_send = True
+        if walls[k] > alert_limit:
+            message += 'at *{}* have *{}*\n'.format(k,walls[k])
     message += "\nLast price:{}".format(last_price)
-    bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
+    if be_send is True:
+        bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
 def flatPrice(market,price):
     price_count = 0
