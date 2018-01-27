@@ -22,7 +22,7 @@ alert_limit = int(os.environ['ALERT_LIMIT'])
 dispatcher = updater.dispatcher
 job = updater.job_queue
 
-walls_cache = {"buy":{},"sell":{}}
+walls_cache = {}
 
 def send_message(bot,market,walls,otype):
     if market == 'USDT-BTC':
@@ -33,7 +33,7 @@ def send_message(bot,market,walls,otype):
     last_price = bittrex.get_marketsummary(market)["result"][0]["Last"]
     message = "*{} wall - {}*\n".format(otype,market)
     for k in sorted(walls.iterkeys()):
-        if not walls_cache[otype] or walls_cache[otype].get(k) is None or (walls[k] > walls_cache[otype][k] + alimit):
+        if not walls_cache[market][otype] or walls_cache[market][otype].get(k) is None or (walls[k] > walls_cache[market][otype][k] + alimit):
             be_send = True
             if walls[k] > alimit:
                 message += 'at *{}* have *{}*\n'.format(k,walls[k])
@@ -41,7 +41,7 @@ def send_message(bot,market,walls,otype):
             message += 'at *{}* have {}\n'.format(k,walls[k])
     message += "\nLast price:{}".format(last_price)
     if be_send is True:
-        walls_cache[otype] = walls
+        walls_cache[market][otype] = walls
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
 def flatPrice(market,price):
@@ -62,6 +62,8 @@ def flatPrice(market,price):
 def watcher(bot, job):
     markets = os.environ['MARKETS'].split(",")
     for market in markets:
+        if walls_cache.get(market) is None:
+            walls_cache[market] = {"buy":{},"sell":{}}
         buy_walls = {}
         sell_walls = {}
         for res in bittrex.get_orderbook(market,"buy")["result"]:
