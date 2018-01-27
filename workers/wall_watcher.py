@@ -35,6 +35,7 @@ def send_message(bot,market,walls,otype):
             message += 'at *{}* have *{}*\n'.format(k,walls[k])
     message += "\nLast price:{}".format(last_price)
     if be_send is True:
+        walls_cache[otype] = walls
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
 def flatPrice(market,price):
