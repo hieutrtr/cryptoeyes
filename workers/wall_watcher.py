@@ -38,7 +38,7 @@ def flatPrice(market,price):
         if price_count == 0:
             for p in price[2:]:
                 if p != '0':
-                    price_count+=6
+                    price_count+=5
                     break
                 price_count+=1
         price = float(price[:price_count])
