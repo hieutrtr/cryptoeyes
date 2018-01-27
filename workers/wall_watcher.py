@@ -34,8 +34,8 @@ def send_message(bot,market,walls,otype):
     message = "*{} wall - {}*\n".format(otype,market)
     for k in sorted(walls.iterkeys()):
         if not walls_cache[market][otype] or walls_cache[market][otype].get(k) is None or (walls[k] > walls_cache[market][otype][k] + alimit):
-            be_send = True
             if walls[k] > alimit:
+                be_send = True
                 message += 'at *{}* have *{}*\n'.format(k,walls[k])
         elif walls[k] > alimit:
             message += 'at *{}* have {}\n'.format(k,walls[k])
