@@ -25,15 +25,19 @@ job = updater.job_queue
 walls_cache = {"buy":{},"sell":{}}
 
 def send_message(bot,market,walls,otype):
+    if market == 'USDT-BTC':
+        alimit = alert_limit*1000
+    else:
+        alimit = alert_limit
     be_send = False
     last_price = bittrex.get_marketsummary(market)["result"][0]["Last"]
     message = "*{} wall - {}*\n".format(otype,market)
     for k in sorted(walls.iterkeys()):
-        if not walls_cache[otype] or walls_cache[otype].get(k) is None or (walls_cache[otype][k] > walls[k] + alert_limit):
+        if not walls_cache[otype] or walls_cache[otype].get(k) is None or (walls_cache[otype][k] > walls[k] + alimit):
             be_send = True
-            if walls[k] > alert_limit:
+            if walls[k] > alimit:
                 message += 'at *{}* have *{}*\n'.format(k,walls[k])
-        elif walls[k] > alert_limit:
+        elif walls[k] > alimit:
             message += 'at *{}* have {}\n'.format(k,walls[k])
     message += "\nLast price:{}".format(last_price)
     if be_send is True:
