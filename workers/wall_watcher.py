@@ -26,7 +26,7 @@ walls_cache = {}
 
 def send_message(bot,market,walls,otype):
     if market == 'USDT-BTC':
-        alimit = alert_limit*1000
+        alimit = alert_limit*10000
     else:
         alimit = alert_limit
     be_send = False
