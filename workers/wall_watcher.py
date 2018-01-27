@@ -31,7 +31,8 @@ def send_message(bot,market,walls,otype):
     for k in sorted(walls.iterkeys()):
         if not walls_cache[otype] or walls_cache[otype].get(k) is None or (walls_cache[otype][k] > walls[k] + alert_limit):
             be_send = True
-            message += 'at *{}* have *{}*\n'.format(k,walls[k])
+            if walls[k] > alert_limit:
+                message += 'at *{}* have *{}*\n'.format(k,walls[k])
         elif walls[k] > alert_limit:
             message += 'at *{}* have {}\n'.format(k,walls[k])
     message += "\nLast price:{}".format(last_price)
