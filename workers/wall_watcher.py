@@ -41,10 +41,18 @@ def send_message(bot,market,walls,otype):
             if walls[k] > alimit:
                 be_send = True
                 message += 'at *{}* have *{}* increase *{}*\n'.format(k,walls[k],walls[k] - walls_cache[market][otype][k])
+                del walls_cache[market][otype][k]
+        elif (walls_cache[market][otype][k] > walls[k] + alimit):
+            if walls[k] > alimit:
+                be_send = True
+                message += 'at *{}* have *{}* decrease *{}*\n'.format(k,walls[k],walls_cache[market][otype][k] - walls[k])
+                del walls_cache[market][otype][k]
         elif walls[k] > alimit:
             message += 'at *{}* have {}\n'.format(k,walls[k])
-    message += "\nLast price:{}".format(last_price)
     if be_send is True:
+        for k,v in walls_cache[market][otype].items():
+            message += 'at *{}* have *{}* is disapeared\n'.format(k,v)
+        message += "\nLast price:{}".format(last_price)
         walls_cache[market][otype] = walls
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
