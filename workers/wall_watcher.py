@@ -49,6 +49,7 @@ def send_message(bot,market,walls,otype):
                 del walls_cache[market][otype][k]
         elif walls[k] > alimit:
             message += 'at *{}* have {}\n'.format(k,walls[k])
+            del walls_cache[market][otype][k] 
     if be_send is True:
         for k,v in walls_cache[market][otype].items():
             message += 'at *{}* have *{}* is disapeared\n'.format(k,v)
