@@ -55,6 +55,7 @@ def watcher(bot, job):
     level = 0
     sum_total = 0.0
     prev_sum_total = 0.0
+    sum_total_change = 0.0
     # for bd in range(int(back_day)-1,-1,-1)[:int(back_day)-1]:
     partition = datetime.datetime.fromtimestamp(int(time.time()) - ((back_day - 1) * 86400)).strftime('%Y-%m-%d')
     bot.send_message(chat_id=my_chatid, text="*Watcher {}* collecting data from {}".format(market,partition),parse_mode=ParseMode.MARKDOWN)
