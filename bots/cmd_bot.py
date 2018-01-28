@@ -197,7 +197,7 @@ def my_balance(bot, update, args):
                 sum_btc += ticker
             elif ba["Currency"] == 'BTC':
                 sum_btc += ba["Balance"]
-            elif ba["Currency"] == 'BTC':
+            elif ba["Currency"] == 'USDT':
                 usdt = ba["Balance"]
             message += '*{}*:{} ({})\n'.format(ba["Currency"],ba["Balance"],ticker)
 
