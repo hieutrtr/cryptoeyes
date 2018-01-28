@@ -48,7 +48,8 @@ def my_balance(bot, update, args):
             message += '*{}*:{} ({})\n'.format(ba["Currency"],ba["Balance"],ticker)
 
     btc_last = bittrex.get_marketsummary("USDT-BTC")["result"][0]["Last"]
-    message+='*Sum BTC*: {} btc / {} usdt'.format(sum_btc,sum_btc*btc_last)
+    message+='*Sum BTC*: {} btc / {} usdt\n'.format(sum_btc,sum_btc*btc_last)
+    message+='*Sum USDT*: {} usdt'.format(usdt+(sum_btc*btc_last))
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 my_balance_handler = CommandHandler('mb', my_balance, pass_args=True)
 dispatcher.add_handler(my_balance_handler)
