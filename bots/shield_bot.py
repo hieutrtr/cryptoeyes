@@ -32,6 +32,7 @@ def my_balance(bot, update, args):
         return
     message = ""
     sum_btc = 0
+    usdt = 0
     for ba in bittrex.get_balances()["result"]:
         if ba["Balance"] != 0:
             ticker = "N/A"
@@ -42,6 +43,8 @@ def my_balance(bot, update, args):
                 sum_btc += ticker
             elif ba["Currency"] == 'BTC':
                 sum_btc += ba["Balance"]
+            elif ba["Currency"] == 'BTC':
+                usdt = ba["Balance"]
             message += '*{}*:{} ({})\n'.format(ba["Currency"],ba["Balance"],ticker)
 
     btc_last = bittrex.get_marketsummary("USDT-BTC")["result"][0]["Last"]
