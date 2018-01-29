@@ -35,9 +35,11 @@ def scrape(chunk=1,ticker_interval=TICKINTERVAL_HOUR):
         if candles.get("success") == True and candles.get("result") is not None:
             topic = 'bittrex.' + market + '.candle.' + ticker_interval
             for can in candles["result"]:
+                itopic = topic
                 if ticker_interval == TICKINTERVAL_FIVEMIN:
-                    topic = topic + '.' + can['T'][:10]
-                producer.send(topic, json.dumps(can).encode())
+                    itopic = topic + '.' + can['T'][:10]
+                    print(itopic)
+                producer.send(itopic, json.dumps(can).encode())
         else: print(market,candles)
     print("there're " + str(len(coins)) + " of coins are tracking.")
 
