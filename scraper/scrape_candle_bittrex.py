@@ -16,6 +16,7 @@ TICKINTERVAL = {
     "DAY": TICKINTERVAL_DAY
 }
 tinterval = os.environ['TICKINTERVAL']
+last = os.environ['LAST']
 coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
 partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y')
@@ -31,7 +32,10 @@ def scrape(chunk=1,ticker_interval=TICKINTERVAL_HOUR):
         bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
         bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
         # histories = bittrex.get_market_history(market)
-        candles = bittrexv2.get_candles(market,ticker_interval)
+        if last == "True":
+            candles = bittrexv2.get_latest_candle(market,ticker_interval)
+        else:
+            candles = bittrexv2.get_candles(market,ticker_interval)
         if candles.get("success") == True and candles.get("result") is not None:
             topic = 'bittrex.' + market + '.candle.' + ticker_interval + '.' + partition
             for can in candles["result"]:
