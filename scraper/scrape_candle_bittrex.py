@@ -18,7 +18,7 @@ TICKINTERVAL = {
 tinterval = os.environ['TICKINTERVAL']
 coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
-partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d')
+partition = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y')
 coins = coinmarketcap.ticker(limit=500)
 
 def scrape(chunk=1,ticker_interval=TICKINTERVAL_HOUR):
@@ -33,13 +33,9 @@ def scrape(chunk=1,ticker_interval=TICKINTERVAL_HOUR):
         # histories = bittrex.get_market_history(market)
         candles = bittrexv2.get_candles(market,ticker_interval)
         if candles.get("success") == True and candles.get("result") is not None:
-            topic = 'bittrex.' + market + '.candle.' + ticker_interval
+            topic = 'bittrex.' + market + '.candle.' + ticker_interval + '.' + partition
             for can in candles["result"]:
-                itopic = topic
-                if ticker_interval == TICKINTERVAL_FIVEMIN:
-                    itopic = topic + '.' + can['T'][:10]
-                    print(itopic)
-                producer.send(itopic, json.dumps(can).encode())
+                producer.send(topic, json.dumps(can).encode())
         else: print(market,candles)
     print("there're " + str(len(coins)) + " of coins are tracking.")
 
