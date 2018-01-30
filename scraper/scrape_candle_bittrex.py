@@ -50,4 +50,4 @@ try:
 except:
    print("Error: unable to start thread")
 
-time.sleep(120)
+time.sleep(60)
