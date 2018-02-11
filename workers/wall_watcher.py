@@ -49,7 +49,7 @@ def send_message(bot,market,walls,otype):
             message += 'at *{}* have {}\n'.format(k,walls[k])
     if be_send is True:
         for k,v in walls_cache[market][otype].items():
-            if walls.get(k) is None and v > alimit:
+            if walls.get(k,0) < alimit and v > alimit:
                 message += 'at *{}* have *{}* is disapeared\n'.format(k,v)
         message += "\nLast price:{}".format(last_price)
         walls_cache[market][otype] = walls
