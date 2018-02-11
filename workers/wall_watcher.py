@@ -37,11 +37,11 @@ def send_message(bot,market,walls,otype):
             if walls[k] > alimit:
                 be_send = True
                 message += 'at *{}* have *{}* as new\n'.format(k,walls[k])
-        elif (walls[k] > walls_cache[market][otype][k] + alimit):
+        elif (walls[k] > walls_cache[market][otype][k] + alimit/5):
             if walls[k] > alimit:
                 be_send = True
                 message += 'at *{}* have *{}* increase *{}*\n'.format(k,walls[k],walls[k] - walls_cache[market][otype][k])
-        elif (walls_cache[market][otype][k] > walls[k] + alimit):
+        elif (walls_cache[market][otype][k] > walls[k] + alimit/5):
             if walls[k] > alimit:
                 be_send = True
                 message += 'at *{}* have *{}* decrease *{}*\n'.format(k,walls[k],walls_cache[market][otype][k] - walls[k])
