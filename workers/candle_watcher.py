@@ -57,7 +57,7 @@ def analyze_candle(candle):
 
 def send_message(bot,market,candle):
     if candle:
-        message = "*{} is reversing*\n{}\n".format(market,candle)
+        message = "*{} {} is reversing*\n{}\n".format(market,tinterval,candle)
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
 def watcher(bot, job):
