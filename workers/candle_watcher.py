@@ -13,7 +13,7 @@ logger.setLevel(logging.DEBUG)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path+'/..')
-from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR, TICKINTERVAL_DAY
+from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR, TICKINTERVAL_DAY, TICKINTERVAL_FIVEMIN
 
 TICKINTERVAL = {
     "HOUR":TICKINTERVAL_HOUR,
@@ -30,14 +30,14 @@ CHAT_INTERVAL = {
 tinterval = os.environ['TICKINTERVAL']
 
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
 my_chatid = os.environ['MY_CHATID']
 updater = Updater(token=os.environ['BOT_TOKEN'])
-alert_limit = int(os.environ['ALERT_LIMIT'])
 dispatcher = updater.dispatcher
 job = updater.job_queue
 
 def get_candle(market):
-    candle = bittrex.get_latest_candle(market,TICKINTERVAL[tinterval])
+    candle = bittrexv2.get_latest_candle(market,TICKINTERVAL[tinterval])
     if candle["success"] is True:
         return candle["result"][0]
     return {}
