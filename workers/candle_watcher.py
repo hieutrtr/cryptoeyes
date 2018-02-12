@@ -37,9 +37,9 @@ dispatcher = updater.dispatcher
 job = updater.job_queue
 
 def get_candle(market):
-    candle = bittrexv2.get_latest_candle(market,TICKINTERVAL[tinterval])
+    candle = bittrexv2.get_candles(market,TICKINTERVAL[tinterval])
     if candle["success"] is True:
-        return candle["result"][0]
+        return candle["result"][-2]
     return {}
 
 def analyze_candle(candle):
