@@ -56,7 +56,7 @@ def analyze_candle(candle):
     return {}
 
 def send_message(bot,market,candle):
-    if not candle:
+    if candle:
         message = "*{} is reversing*\n{}\n".format(market,candle)
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
