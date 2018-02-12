@@ -45,7 +45,7 @@ def get_candle(market):
 def analyze_candle(candle):
     if not candle:
         return {}
-    body = candle['O'] - candle['C']
+    body = candle['C'] - candle['O']
     up_tail = candle['H'] - candle['C'] if body >= 0 else candle['H'] - candle['O']
     low_tail = candle['O'] - candle['L'] if body >= 0 else candle['C'] - candle['L']
     body = (body * -1) if body < 0 else body
