@@ -20,10 +20,7 @@ sys.path.insert(0, dir_path+'/..')
 from binance.client import Client
 from binance.enums import *
 bnb_client = Client(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
-# tickers = bnb_client.get_account()["balances"]
-# tickers = bnb_client.get_ticker(symbol="RDNBTC")
-# tickers = bnb_client.get_all_orders(symbol="*")
-# print(tickers)
+
 def verify(chat_id):
     return str(chat_id) == my_chatid
 

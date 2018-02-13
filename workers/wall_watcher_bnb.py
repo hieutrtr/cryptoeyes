@@ -13,9 +13,11 @@ logger.setLevel(logging.DEBUG)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path+'/..')
-from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
 
-bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+from binance.client import Client
+from binance.enums import *
+bnb_client = Client(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+
 my_chatid = os.environ['MY_CHATID']
 updater = Updater(token=os.environ['BOT_TOKEN'])
 alert_limit = int(os.environ['ALERT_LIMIT'])
@@ -25,14 +27,19 @@ job = updater.job_queue
 walls_cache = {}
 
 def send_message(bot,market,walls,otype):
-    if market == 'USDT-BTC':
+    if market == 'BTCUSDT':
         alimit = alert_limit*10000
     else:
         alimit = alert_limit
     be_send = False
-    last_price = bittrex.get_marketsummary(market)["result"][0]["Last"]
+
+    ticker = bnb_client.get_symbol_ticker(symbol=market)
+    last_price = float(ticker["price"])
     message = "*{} wall - {}*\n".format(otype,market)
-    for k in sorted(walls.iterkeys()):
+    print(walls)
+    for k in sorted(walls.keys()):
+        print("k",k)
+        print("walls[k]",walls[k])
         if walls_cache[market][otype].get(k) is None:
             if walls[k] > alimit:
                 be_send = True
@@ -53,12 +60,12 @@ def send_message(bot,market,walls,otype):
                 message += 'at *{}* have *{}* is disapeared\n'.format(k,v)
         message += "\nLast price:{}".format(last_price)
         walls_cache[market][otype] = walls
-        bot.send_message(chat_id=my_chatid, text="*Bittrex*\n"+message,parse_mode=ParseMode.MARKDOWN)
+        bot.send_message(chat_id=my_chatid, text="*Binance*\n"+message,parse_mode=ParseMode.MARKDOWN)
 
 def flatPrice(market,price):
     price_count = 0
-    if market == 'USDT-BTC':
-        price = (int(price)/100)*100
+    if market == 'BTCUSDT':
+        price = round(int(round(price))/100)*100 #(int(price)/100)*100
     else:
         price = '{0:.10f}'.format(price)
         if price_count == 0:
@@ -77,14 +84,14 @@ def watcher(bot, job):
             walls_cache[market] = {"buy":{},"sell":{}}
         buy_walls = {}
         sell_walls = {}
-        for res in bittrex.get_orderbook(market,"buy")["result"]:
-            price = flatPrice(market,res["Rate"])
-            Quantity = (res["Quantity"] * res["Rate"])
+        for res in bnb_client.get_order_book(symbol=market)["bids"]:
+            price = flatPrice(market,float(res[0]))
+            Quantity = (float(res[1]) * float(res[0]))
             buy_walls[price] = Quantity if buy_walls.get(price) is None else buy_walls[price] + Quantity
         send_message(bot,market,buy_walls,"buy")
-        for res in bittrex.get_orderbook(market,"sell")["result"]:
-            price = flatPrice(market,res["Rate"])
-            Quantity = (res["Quantity"] * res["Rate"])
+        for res in bnb_client.get_order_book(symbol=market)["asks"]:
+            price = flatPrice(market,float(res[0]))
+            Quantity = (float(res[1]) * float(res[0]))
             sell_walls[price] = Quantity if sell_walls.get(price) is None else sell_walls[price] + Quantity
         send_message(bot,market,sell_walls,"sell")
 
