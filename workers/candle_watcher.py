@@ -49,9 +49,9 @@ def analyze_candle(candle):
     up_tail = candle['H'] - candle['C'] if body >= 0 else candle['H'] - candle['O']
     low_tail = candle['O'] - candle['L'] if body >= 0 else candle['C'] - candle['L']
     body = (body * -1) if body < 0 else body
-    if up_tail >= body*3:
+    if up_tail >= body*4:
         return candle
-    elif low_tail >= body*3:
+    elif low_tail >= body*4:
         return candle
     return {}
 
