@@ -1,4 +1,3 @@
-from kafka import KafkaConsumer,TopicPartition
 import json
 import os, time, datetime, sys
 
