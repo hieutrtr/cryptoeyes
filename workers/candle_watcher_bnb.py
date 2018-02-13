@@ -13,12 +13,14 @@ logger.setLevel(logging.DEBUG)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path+'/..')
-from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR, TICKINTERVAL_DAY, TICKINTERVAL_FIVEMIN
+from binance.client import Client
+from binance.enums import *
+bnb_client = Client(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
 
 TICKINTERVAL = {
-    "HOUR":TICKINTERVAL_HOUR,
-    "FIVEMIN": TICKINTERVAL_FIVEMIN,
-    "DAY": TICKINTERVAL_DAY
+    "HOUR":Client.KLINE_INTERVAL_1HOUR,
+    "FIVEMIN": Client.KLINE_INTERVAL_5MINUTE,
+    "DAY": Client.KLINE_INTERVAL_1DAY
 }
 
 CHAT_INTERVAL = {
@@ -28,36 +30,35 @@ CHAT_INTERVAL = {
 }
 
 tinterval = os.environ['TICKINTERVAL']
-
-bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
-bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
 my_chatid = os.environ['MY_CHATID']
 updater = Updater(token=os.environ['BOT_TOKEN'])
 dispatcher = updater.dispatcher
 job = updater.job_queue
 
 def get_candle(market):
-    candle = bittrexv2.get_candles(market,TICKINTERVAL[tinterval])
-    if candle["success"] is True:
-        return candle["result"][-2]
-    return {}
+    candle = bnb_client.get_klines(symbol=market, interval=TICKINTERVAL[tinterval])
+    return candle[-2]
 
 def analyze_candle(candle):
     if not candle:
         return {}
-    body = candle['C'] - candle['O']
-    up_tail = candle['H'] - candle['C'] if body >= 0 else candle['H'] - candle['O']
-    low_tail = candle['O'] - candle['L'] if body >= 0 else candle['C'] - candle['L']
+    O = float(candle[1])
+    C = float(candle[4])
+    H = float(candle[2])
+    L = float(candle[3])
+    body = C - O
+    up_tail = H - C if body >= 0 else H - O
+    low_tail = O - L if body >= 0 else C - L
     body = (body * -1) if body < 0 else body
     if up_tail >= body*4:
         return candle
     elif low_tail >= body*4:
         return candle
-    return {}
+    return []
 
 def send_message(bot,market,candle):
     if candle:
-        message = "*Bittrex*\n*{} {} is reversing*\n{}\n".format(market,tinterval,candle)
+        message = "*Binance*\n*{} {} is reversing*\n{}\n".format(market,tinterval,candle)
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
 def watcher(bot, job):
