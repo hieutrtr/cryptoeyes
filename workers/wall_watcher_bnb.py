@@ -84,12 +84,13 @@ def watcher(bot, job):
             walls_cache[market] = {"buy":{},"sell":{}}
         buy_walls = {}
         sell_walls = {}
-        for res in bnb_client.get_order_book(symbol=market)["bids"]:
+        order_books = bnb_client.get_order_book(symbol=market,limit=1000)
+        for res in order_books["bids"]:
             price = flatPrice(market,float(res[0]))
             Quantity = (float(res[1]) * float(res[0]))
             buy_walls[price] = Quantity if buy_walls.get(price) is None else buy_walls[price] + Quantity
         send_message(bot,market,buy_walls,"buy")
-        for res in bnb_client.get_order_book(symbol=market)["asks"]:
+        for res in order_books["asks"]:
             price = flatPrice(market,float(res[0]))
             Quantity = (float(res[1]) * float(res[0]))
             sell_walls[price] = Quantity if sell_walls.get(price) is None else sell_walls[price] + Quantity
