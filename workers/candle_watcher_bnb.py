@@ -1,4 +1,4 @@
-from kafka import KafkaConsumer,TopicPartition
+import redis
 import json
 import os, time, datetime, sys
 from telegram.ext import Updater,CommandHandler
@@ -29,6 +29,7 @@ CHAT_INTERVAL = {
     "DAY": 3600*24
 }
 
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
 tinterval = os.environ['TICKINTERVAL']
 my_chatid = os.environ['MY_CHATID']
 updater = Updater(token=os.environ['BOT_TOKEN'])
@@ -58,7 +59,12 @@ def analyze_candle(candle):
 
 def send_message(bot,market,candle):
     if candle:
+        rbuykey = 'binance.buy_wall.{}'.format(market)
+        rsellkey = 'binance.sell_wall.{}'.format(market)
+        rbuyval = r.get(rbuykey)
+        rsellval = r.get(rsellkey)
         message = "*Binance*\n*{} {} is reversing*\n{}\n".format(market,tinterval,candle)
+        message = '{}\n*buy wall*\n{}\n*sell wall*\n{}\n'.format(message,rbuyval,rsellval)
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
 def watcher(bot, job):

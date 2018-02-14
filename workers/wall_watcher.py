@@ -1,4 +1,4 @@
-from kafka import KafkaConsumer,TopicPartition
+import redis
 import json
 import os, time, datetime, sys
 from telegram.ext import Updater,CommandHandler
@@ -23,6 +23,7 @@ dispatcher = updater.dispatcher
 job = updater.job_queue
 
 walls_cache = {}
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 def send_message(bot,market,walls,otype):
     if market == 'USDT-BTC':
@@ -53,6 +54,8 @@ def send_message(bot,market,walls,otype):
                 message += 'at *{}* have *{}* is disapeared\n'.format(k,v)
         message += "\nLast price:{}".format(last_price)
         walls_cache[market][otype] = walls
+        rkey = 'bittrex.{}_wall.{}'.format(otype,market)
+        r.set(rkey,walls)
         bot.send_message(chat_id=my_chatid, text="*Bittrex*\n"+message,parse_mode=ParseMode.MARKDOWN)
 
 def flatPrice(market,price):

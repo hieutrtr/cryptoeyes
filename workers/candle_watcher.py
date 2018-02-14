@@ -1,4 +1,4 @@
-from kafka import KafkaConsumer,TopicPartition
+import redis
 import json
 import os, time, datetime, sys
 from telegram.ext import Updater,CommandHandler
@@ -27,6 +27,7 @@ CHAT_INTERVAL = {
     "DAY": 3600*24
 }
 
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
 tinterval = os.environ['TICKINTERVAL']
 
 bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
@@ -57,7 +58,12 @@ def analyze_candle(candle):
 
 def send_message(bot,market,candle):
     if candle:
-        message = "*Bittrex*\n*{} {} is reversing*\n{}\n".format(market,tinterval,candle)
+        rbuykey = 'bittrex.buy_wall.{}'.format(market)
+        rsellkey = 'bittrex.sell_wall.{}'.format(market)
+        rbuyval = r.get(rbuykey)
+        rsellval = r.get(rsellkey)
+        message = "*Bittrex*\n*{} {} is reversing*\n{}".format(market,tinterval,candle)
+        message = '{}\n*buy wall*\n{}\n*sell wall*\n{}\n'.format(message,rbuyval,rsellval)
         bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)
 
 def watcher(bot, job):
