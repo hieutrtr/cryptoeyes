@@ -62,7 +62,7 @@ def send_message(bot,market,walls,otype):
         message += "\nLast price:{}".format(last_price)
         walls_cache[market][otype] = walls
         rkey = 'binance.{}_wall.{}'.format(otype,market)
-        r.set(rkey,walls)
+        r.set(rkey,message)
         bot.send_message(chat_id=my_chatid, text="*Binance*\n"+message,parse_mode=ParseMode.MARKDOWN)
 
 def flatPrice(market,price):
