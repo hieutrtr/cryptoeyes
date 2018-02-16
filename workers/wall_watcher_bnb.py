@@ -37,10 +37,7 @@ def send_message(bot,market,walls,otype):
     ticker = bnb_client.get_symbol_ticker(symbol=market)
     last_price = float(ticker["price"])
     message = "*{} wall - {}*\n".format(otype,market)
-    print(walls)
     for k in sorted(walls.keys()):
-        print("k",k)
-        print("walls[k]",walls[k])
         if walls_cache[market][otype].get(k) is None:
             if walls[k] > alimit:
                 be_send = True
