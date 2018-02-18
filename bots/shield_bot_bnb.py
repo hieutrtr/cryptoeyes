@@ -114,7 +114,7 @@ def protect(bot, update, args):
                         side=SIDE_BUY,
                         type=ORDER_TYPE_LIMIT,
                         timeInForce=TIME_IN_FORCE_GTC,
-                        quantity=quantity/float(rate),
+                        quantity=round(quantity/float(rate)),
                         price=rate)
         order_id = result['orderId']
     else:
@@ -134,7 +134,7 @@ def protect(bot, update, args):
                         side=SIDE_BUY,
                         type=ORDER_TYPE_STOP_LOSS_LIMIT,
                         timeInForce=TIME_IN_FORCE_GTC,
-                        quantity=quantity/float(rate),
+                        quantity=round(quantity/float(rate)),
                         price=rate,
                         stopPrice=target)
         order_id = result['orderId']
