@@ -6,8 +6,13 @@ from kafka import KafkaProducer
 import json,datetime,time
 import redis
 from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
+from binance.client import Client
+from binance.enums import *
 import _thread
 
+# bnb_client = Client(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
+# print(bnb_client.get_historical_trades(symbol='LBCBTC'))
+# print(len(bnb_client.get_historical_trades(symbol='LBCBTC')))
 rose_host = os.environ['ROSE_HOST']
 coinmarketcap = Market()
 # coins = ['bitcoin','ethereum','bitcoin-cash','iota','ripple','dash','litecoin']
@@ -21,16 +26,19 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 def scrape(chunk=1):
     producer = KafkaProducer(bootstrap_servers=rose_host)
     for coin in coins[(chunk-1)*10:chunk*10]:
-        market = 'BTC-' + coin["symbol"]
+        bittrex_market = 'BTC-' + coin["symbol"]
+        bnb_market = coin["symbol"] + 'BTC'
         if coin["symbol"] == 'BTC':
-            market = 'USDT-' + coin["symbol"]
+            bittrex_market = 'USDT-' + coin["symbol"]
+            bnb_market = coin["symbol"] +' USDT'
 
+        bnb_client = Client(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
         bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
         bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
-        histories = bittrex.get_market_history(market)
+        histories = bittrex.get_market_history(bittrex_market)
         if histories.get("success") == True and histories.get("result") is not None:
             hist_lenght = len(histories["result"])-1
-            topic = 'bittrex.' + market + '.history'
+            topic = 'bittrex.' + bittrex_market + '.history'
             print(topic)
             check_point = r.get(topic + '.check_point')
             for i in range(hist_lenght,-1,-1):
@@ -38,7 +46,20 @@ def scrape(chunk=1):
                 if check_point is None or hist["Id"] > int(check_point):
                     producer.send(topic + '.' + partition, json.dumps(hist).encode())
             r.set(topic+'.check_point',histories["result"][hist_lenght]["Id"])
-        else: print(market,histories)
+        else:
+            try:
+                histories = bnb_client.get_historical_trades(symbol=bnb_market)
+                hist_lenght = len(histories)-1
+                topic = 'binance.' + bnb_market + '.history'
+                print(topic)
+                check_point = r.get(topic + '.check_point')
+                for i in range(hist_lenght):
+                    hist = histories[i]
+                    if check_point is None or hist["id"] > int(check_point):
+                        producer.send(topic + '.' + partition, json.dumps(hist).encode())
+                r.set(topic+'.check_point',histories[hist_lenght]["id"])
+            except Exception as e
+                print(e)
     print("there're " + str(len(coins)) + " of coins are tracking.")
 
 # Create two threads as follows

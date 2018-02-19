@@ -21,3 +21,5 @@ print(coinList)
 with open(dir_path+"/../config/coin_list.json", "w") as coinListFile:
     coinListFile.write(json.dumps(coinList))
     coinListFile.close()
+
+#ROSE_HOST=35.197.152.169:9092 python scrape/scrape_marketcap.py
