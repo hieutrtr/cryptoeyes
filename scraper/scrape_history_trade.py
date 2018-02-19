@@ -22,6 +22,7 @@ TICKINTERVAL = {
     "HOUR":TICKINTERVAL_HOUR,
     "ONEMIN": TICKINTERVAL_ONEMIN
 }
+
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 def scrape(chunk=1):
     producer = KafkaProducer(bootstrap_servers=rose_host)
@@ -32,9 +33,9 @@ def scrape(chunk=1):
             bittrex_market = 'USDT-' + coin["symbol"]
             bnb_market = coin["symbol"] +' USDT'
 
-        bnb_client = Client(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
-        bittrex = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'])
-        bittrexv2 = Bittrex(os.environ['CRYPTOEYES_KEY'], os.environ['CRYPTOEYES_SEC'],api_version=API_V2_0)
+        bnb_client = Client(os.environ['BNB_CRYPTOEYES_KEY'], os.environ['BNB_CRYPTOEYES_SEC'])
+        bittrex = Bittrex(os.environ['BTX_CRYPTOEYES_KEY'], os.environ['BTX_CRYPTOEYES_SEC'])
+        bittrexv2 = Bittrex(os.environ['BTX_CRYPTOEYES_KEY'], os.environ['BTX_CRYPTOEYES_SEC'],api_version=API_V2_0)
         histories = bittrex.get_market_history(bittrex_market)
         if histories.get("success") == True and histories.get("result") is not None:
             hist_lenght = len(histories["result"])-1
@@ -58,7 +59,7 @@ def scrape(chunk=1):
                     if check_point is None or hist["id"] > int(check_point):
                         producer.send(topic + '.' + partition, json.dumps(hist).encode())
                 r.set(topic+'.check_point',histories[hist_lenght]["id"])
-            except Exception as e
+            except Exception as e:
                 print(e)
     print("there're " + str(len(coins)) + " of coins are tracking.")
 
