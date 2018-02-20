@@ -34,13 +34,15 @@ def my_balance(bot, update, args):
     usdt = 0
     for ba in bnb_client.get_account()["balances"]:
         balance = float(ba["free"]) + float(ba["locked"])
-        if balance >= 0.001 :
+        if balance != 0 :
             ticker = "N/A"
             if ba["asset"] not in ['BTC','USDT']:
                 ticker = bnb_client.get_symbol_ticker(symbol=ba["asset"]+"BTC")
                 last_price = float(ticker["price"]) if ticker["price"] else 0.0
                 ticker = last_price*balance
                 sum_btc += ticker
+                if ticker < 0.001:
+                    continue
             elif ba["asset"] == 'BTC':
                 sum_btc += balance
             elif ba["asset"] == 'USDT':
