@@ -131,14 +131,18 @@ def protect(bot, update, args):
         if otype == 's':
             result = bittrex.sell_limit(coin,quantity,rate)
         elif otype == 'b':
-            result = bittrex.buy_limit(coin,round(quantity/rate),rate)
+            if coin[:4] != 'USDT':
+                quantity = round(quantity/rate)
+            result = bittrex.buy_limit(coin,quantity,rate)
         order_id = result['result']['uuid']
     else:
         target = float(args[4])
         if otype == 's':
             result = bittrexv2.trade_sell(market=coin,order_type='LIMIT',quantity=quantity,rate=rate,target=target,condition_type='LESS_THAN',time_in_effect='GOOD_TIL_CANCELLED')
         elif otype == 'b':
-            result = bittrexv2.trade_buy(market=coin,order_type='LIMIT',quantity=round(quantity/rate),rate=rate,target=target,condition_type='GREATER_THAN',time_in_effect='GOOD_TIL_CANCELLED')
+            if coin[:4] != 'USDT':
+                quantity = round(quantity/rate)
+            result = bittrexv2.trade_buy(market=coin,order_type='LIMIT',quantity=quantity,rate=rate,target=target,condition_type='GREATER_THAN',time_in_effect='GOOD_TIL_CANCELLED')
         order_id = result['result']['OrderId']
     message = "{}".format(order_id)
     bot.send_message(chat_id=my_chatid, text=message,parse_mode=ParseMode.MARKDOWN)

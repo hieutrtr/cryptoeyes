@@ -111,12 +111,14 @@ def protect(bot, update, args):
                         quantity=quantity,
                         price=rate)
         elif otype == 'b':
+            if coin[-4:] != 'USDT':
+                quantity = round(quantity/float(rate))
             result = bnb_client.create_order(
                         symbol=coin,
                         side=SIDE_BUY,
                         type=ORDER_TYPE_LIMIT,
                         timeInForce=TIME_IN_FORCE_GTC,
-                        quantity=round(quantity/float(rate)),
+                        quantity=quantity,
                         price=rate)
         order_id = result['orderId']
     else:
@@ -131,12 +133,14 @@ def protect(bot, update, args):
                         price=rate,
                         stopPrice=target)
         elif otype == 'b':
+            if coin[-4:] != 'USDT':
+                quantity = round(quantity/float(rate))
             result = bnb_client.create_order(
                         symbol=coin,
                         side=SIDE_BUY,
                         type=ORDER_TYPE_STOP_LOSS_LIMIT,
                         timeInForce=TIME_IN_FORCE_GTC,
-                        quantity=round(quantity/float(rate)),
+                        quantity=quantity,
                         price=rate,
                         stopPrice=target)
         order_id = result['orderId']
