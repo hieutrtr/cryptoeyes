@@ -122,7 +122,7 @@ def protect(bot, update, args):
                         price=rate)
         order_id = result['orderId']
     else:
-        target = float(args[4])
+        target = args[4]
         if otype == 's':
             result = bnb_client.create_order(
                         symbol=coin,
